@@ -1,45 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { navItems, slides, cast, nfTags, nfHotLives, nfFixedFeeds } from './data';
 import {
-  Shield,
-  Users,
-  Lock,
-  Search,
-  ChevronRight,
-  ChevronLeft,
-  ChevronDown,
-  FileText,
-  Camera,
-  BookOpen,
-  Info,
-  Eye,
-  Radio,
-  Video,
-  Award,
-  Zap,
-  Play,
-  Pause,
-  TrendingUp,
-  Clock,
-  PhoneCall,
-  Heart,
-  Star,
-  List,
-  Flame,
-  Wifi,
-  Layers,
-  User,
-  LogOut,
-  Gift,
-  Bell,
-  Bookmark,
-  Layout,
-  MoreHorizontal,
-  Home,
-  Send,
-  MessageCircle,
-  Monitor,
+  Shield,Users,Lock,Search,ChevronRight,ChevronLeft,ChevronDown,FileText,
+  Camera,BookOpen,Info,Eye,Radio,Video,Award,Zap,Play,Pause,TrendingUp,Clock,
+  PhoneCall,Heart,Star,List,Flame,Wifi,Layers,User,LogOut,Gift,Bell,Bookmark,Layout,MoreHorizontal,
+  Home,Send,MessageCircle,Monitor,
   X,
+  Car,        // 新增：用于交通课
+  Briefcase   // 新增：用于刑事课
 } from "lucide-react";
 
 // ==========================================
@@ -54,23 +22,24 @@ const App = () => {
     return <NFPlatformView onBackToPortal={() => setActiveTab("home")} />;
   }
 
-  // 渲染政务网主视图
-  const renderContent = () => {
-    switch (activeTab) {
-      case "home":
-        return <HomeView setActiveTab={setActiveTab} />;
-      case "dispatch":
-        return <DispatchView setSelectedOfficer={setSelectedOfficer} />;
-      case "depts":
-        return <DepartmentsView setSelectedOfficer={setSelectedOfficer} />;
-      case "publications":
-        return <PublicationsView />;
-      case "detention":
-        return <DetentionView />;
-      default:
-        return <HomeView setActiveTab={setActiveTab} />;
-    }
-  };
+// 渲染政务网主视图
+const renderContent = () => {
+  switch (activeTab) {
+    case "home":
+      return <HomeView setActiveTab={setActiveTab} />;
+    case "dispatch":
+      return <DispatchView setSelectedOfficer={setSelectedOfficer} />;
+    case "depts":
+      // ▼ 重点看这里：换成我们刚刚建好的“展柜” ▼
+      return <OrganizationView />; 
+    case "publications":
+      return <PublicationsView />;
+    case "detention":
+      return <DetentionView />;
+    default:
+      return <HomeView setActiveTab={setActiveTab} />;
+  }
+};
 
   const isParentActive = (item) => {
     if (item.id === activeTab) return true;
@@ -673,26 +642,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
   );
 };
 
-const DepartmentsView = ({ setSelectedOfficer }) => {
-  const departments = [
-    {
-      id: "hq",
-      name: "本局管理部",
-      icon: <Shield size={24} />,
-      desc: "负责警局整体运营及决策。",
-      officers: [{ id: "H001", name: "羽佐間 蜜羽", rank: "警视正" }],
-    },
-    {
-      id: "patrol",
-      name: "地域课",
-      icon: <Users size={24} />,
-      desc: "前线巡逻与紧急救济。",
-      officers: [
-        { id: "S024", name: "佐藤 遥香", rank: "巡查部长" },
-        { id: "K019", name: "星见 春", rank: "巡查" },
-      ],
-    },
-  ];
   return (
     <div className="space-y-12 py-10 animate-in slide-in-from-bottom-4 duration-700">
       <h2 className="text-4xl font-black text-[#003366]">組織・職員案内</h2>
@@ -737,7 +686,6 @@ const DepartmentsView = ({ setSelectedOfficer }) => {
       </div>
     </div>
   );
-};
 
 const PublicationsView = () => (
   <div className="space-y-12 py-10">
@@ -781,6 +729,116 @@ const DetentionView = () => (
     </div>
   </div>
 );
+
+// ==========================================
+// 组织案内视图 (部门结构展示)
+// ==========================================
+const OrganizationView = () => {
+  // 默认选中第一个部门
+  const [activeDept, setActiveDept] = useState(departments[0]);
+
+  // 用于将文本名称映射为真实图标的辅助对象
+  const iconMap = {
+    Car: <Car size={20} />,
+    Shield: <Shield size={20} />,
+    Search: <Search size={20} />,
+    Briefcase: <Briefcase size={20} />,
+    Monitor: <Monitor size={20} />,
+    FileText: <FileText size={20} />
+  };
+
+  return (
+    <div className="flex h-[calc(100vh-64px)] bg-slate-50 text-slate-800">
+      {/* 左侧部门导航栏 */}
+      <div className="w-1/4 bg-white border-r border-slate-200 overflow-y-auto">
+        <div className="p-6 bg-[#003366] text-white">
+          <h2 className="text-xl font-bold tracking-widest">組織案内</h2>
+          <p className="text-sm text-blue-200 mt-1">Naine Police Departments</p>
+        </div>
+        <nav className="flex flex-col p-4 space-y-2">
+          {departments.map((dept) => (
+            <button
+              key={dept.id}
+              onClick={() => setActiveDept(dept)}
+              className={`flex items-center p-3 rounded-lg transition-all ${
+                activeDept.id === dept.id
+                  ? 'bg-blue-50 text-[#003366] font-bold border-l-4 border-[#003366]'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              <div className="mr-3 text-slate-400">
+                {iconMap[dept.icon] || <Shield size={20} />}
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-bold">{dept.name}</div>
+                <div className="text-xs text-slate-400">{dept.location}</div>
+              </div>
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* 右侧部门详细档案 */}
+      <div className="flex-1 p-8 overflow-y-auto">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+          {/* 头部标题区 */}
+          <div className="border-b border-slate-100 pb-6 mb-6 flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800 mb-1">{activeDept.name}</h1>
+              <p className="text-slate-500">{activeDept.fullName}</p>
+            </div>
+            <div className="text-right bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
+              <div className="text-xs text-slate-400 font-bold mb-1">配置場所</div>
+              <div className="font-bold text-slate-700">{activeDept.location}</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-8">
+            {/* 左列：职责与特色 */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
+                  <Bookmark size={16} className="mr-2" /> 主要職責
+                </h3>
+                <p className="text-slate-700 leading-relaxed font-medium">
+                  {activeDept.role}
+                </p>
+              </div>
+              <div>
+                <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
+                  <Star size={16} className="mr-2" /> 部門特色
+                </h3>
+                <div className="bg-slate-50 p-5 rounded-lg border border-slate-100 text-slate-700 text-sm leading-relaxed whitespace-pre-line">
+                  {activeDept.feature}
+                </div>
+              </div>
+            </div>
+
+            {/* 右列：人员与制服规定 */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between bg-blue-50 p-5 rounded-lg border border-blue-100">
+                <span className="font-bold text-[#003366] flex items-center">
+                  <Users size={18} className="mr-2" /> 人員配置
+                </span>
+                <span className="text-2xl font-black text-[#003366]">{activeDept.staff} 名</span>
+              </div>
+              
+              <div>
+                <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
+                  <Layers size={16} className="mr-2" /> 服装規定 (制服要件)
+                </h3>
+                {/* 这里的 whitespace-pre-line 可以让你在 data.js 里敲的回车直接换行 */}
+                <div className="bg-slate-800 text-slate-200 p-5 rounded-lg text-sm leading-relaxed border-l-4 border-[#f39800] shadow-inner whitespace-pre-line">
+                  {activeDept.uniform}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // ==========================================
 // 4. N.F 平台专属视图 (Fullscreen Takeover)
