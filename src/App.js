@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
-import { navItems, slides, cast, nfTags, nfHotLives, nfFixedFeeds, departments } from './data';
+import { navItems, slides, cast, nfTags, nfHotLives, nfFixedFeeds, departments, dispatchData } from './data';
 import {
   Shield,Users,Lock,Search,ChevronRight,ChevronLeft,ChevronDown,FileText,
   Camera,BookOpen,Info,Eye,Radio,Video,Award,Zap,Play,Pause,TrendingUp,Clock,
@@ -393,27 +393,35 @@ const HomeView = ({ setActiveTab }) => {
   );
 };
 
+// ==========================================
+// 紧急救济派单视图 (表里世界双层架构)
+// ==========================================
 const DispatchView = ({ setSelectedOfficer }) => {
-  const [historyItemsVisible, setHistoryItemsVisible] = useState([
-    false,
-    false,
-    false,
-    false,
-    false,
-  ]);
+  const [historyItemsVisible, setHistoryItemsVisible] = useState([false, false, false, false, false]);
   const [activeHistoryIndex, setActiveHistoryIndex] = useState(-1);
-  const slots = Array.from(
-    { length: 10 },
-    (_, i) => cast[i] || { isPlaceholder: true }
-  );
+  
+  // --- 表里世界核心状态 ---
+  const [clickCount, setClickCount] = useState(0); // 记录暗门点击次数
+  const [isSecretMode, setIsSecretMode] = useState(false); // 是否进入里世界
+  const [showVerifyModal, setShowVerifyModal] = useState(false); // 是否显示身份验证弹窗
+  const [idInput, setIdInput] = useState(''); // 身份验证输入框
+  const [verifyError, setVerifyError] = useState('');
+  
+  // --- 派单表单状态 ---
+  const [callingOfficer, setCallingOfficer] = useState(null); // 当前正在呼叫的警员
+  const [dispatchStep, setDispatchStep] = useState('idle'); // idle -> form -> processing -> success
+
+  // 里世界服务表单选择
+  const [selectedService, setSelectedService] = useState(dispatchData.secret.services[0]);
+  const [selectedAddons, setSelectedAddons] = useState([]);
+
+  const slots = Array.from({ length: 10 }, (_, i) => cast[i] || { isPlaceholder: true });
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const indexToUnlock = Math.floor(scrollY / 150);
-      setHistoryItemsVisible((prev) =>
-        prev.map((_, i) => i <= Math.min(indexToUnlock, 4))
-      );
+      setHistoryItemsVisible((prev) => prev.map((_, i) => i <= Math.min(indexToUnlock, 4)));
       setActiveHistoryIndex(indexToUnlock);
     };
     window.addEventListener("scroll", handleScroll);
@@ -421,215 +429,356 @@ const DispatchView = ({ setSelectedOfficer }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // --- 暗门触发逻辑 ---
+  const handleSecretTrigger = () => {
+    if (isSecretMode) return;
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+    if (newCount >= 3) {
+      setShowVerifyModal(true);
+      setClickCount(0);
+    }
+  };
+
+  // --- 身份验证逻辑 ---
+  const handleVerify = () => {
+    if (idInput.length === 12 && /^\d+$/.test(idInput)) {
+      setShowVerifyModal(false);
+      setIsSecretMode(true);
+    } else {
+      setVerifyError('認証失敗: マイナンバー(12桁の数字)を確認してください。');
+    }
+  };
+
+  // --- 提交派单逻辑 (触发仪式感动画) ---
+  const handleDispatchSubmit = () => {
+    setDispatchStep('processing');
+    // 模拟系统处理动画的延迟
+    setTimeout(() => setDispatchStep('success'), 3500);
+  };
+
+  const closeDispatch = () => {
+    setCallingOfficer(null);
+    setDispatchStep('idle');
+    setSelectedAddons([]);
+  };
+
+  const toggleAddon = (addon) => {
+    if (selectedAddons.find(a => a.id === addon.id)) {
+      setSelectedAddons(selectedAddons.filter(a => a.id !== addon.id));
+    } else {
+      setSelectedAddons([...selectedAddons, addon]);
+    }
+  };
+
+  const calculateTotal = () => {
+    return selectedService.price + selectedAddons.reduce((sum, a) => sum + a.price, 0);
+  };
+
   return (
-    <div className="py-6 animate-in fade-in duration-1000">
+    <div className={`py-6 animate-in fade-in duration-1000 min-h-screen transition-colors duration-700 ${isSecretMode ? 'bg-[#0a0508] text-zinc-300' : 'bg-transparent text-[#333]'}`}>
+      
+      {/* 身份验证弹窗 (暗门) */}
+      {showVerifyModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+          <div className="bg-zinc-950 border border-pink-900 p-8 w-full max-w-md shadow-[0_0_50px_rgba(225,29,72,0.2)] animate-in zoom-in-95 font-mono">
+            <div className="flex items-center gap-3 mb-6 text-pink-600 border-b border-pink-900/50 pb-4">
+              <Lock size={24} className="animate-pulse" />
+              <h3 className="text-xl font-black tracking-widest uppercase">Security Clearance</h3>
+            </div>
+            <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
+              特別救済システムへのアクセスには、身分証明が必要です。<br/>
+              マイナンバー（個人番号12桁）を入力してください。
+            </p>
+            <input 
+              type="text" 
+              maxLength={12}
+              placeholder="0000 0000 0000"
+              value={idInput}
+              onChange={(e) => {setIdInput(e.target.value); setVerifyError('');}}
+              className="w-full bg-black border border-zinc-800 text-pink-500 font-black text-center text-xl tracking-[0.5em] py-4 mb-2 focus:outline-none focus:border-pink-600"
+            />
+            {verifyError && <p className="text-[10px] text-red-500 mb-4">{verifyError}</p>}
+            <div className="flex gap-4 mt-6">
+              <button onClick={() => setShowVerifyModal(false)} className="flex-1 py-3 bg-zinc-900 text-zinc-500 font-bold hover:bg-zinc-800">キャンセル</button>
+              <button onClick={handleVerify} className="flex-1 py-3 bg-pink-700 text-white font-black hover:bg-pink-600 shadow-[0_0_15px_rgba(190,24,93,0.5)]">認証開始</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 呼叫/派单 表单弹窗 */}
+      {callingOfficer && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-md animate-in fade-in">
+          <div className={`w-full max-w-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 ${isSecretMode ? 'bg-zinc-950 border border-pink-900/50 text-zinc-300' : 'bg-white border border-blue-100 text-[#333]'}`}>
+            
+            {/* 顶部警员信息栏 */}
+            <div className={`p-6 flex items-center gap-6 border-b ${isSecretMode ? 'bg-[#1a0f14] border-pink-900/30' : 'bg-blue-50/50 border-blue-50'}`}>
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-current shrink-0">
+                <img src={callingOfficer.img} className="w-full h-full object-cover" alt={callingOfficer.name} />
+              </div>
+              <div>
+                <h3 className={`text-2xl font-black ${isSecretMode ? 'text-pink-500' : 'text-[#003366]'}`}>
+                  {isSecretMode ? '指名対象: ' : '要請対象: '}{callingOfficer.name}
+                </h3>
+                <p className="text-sm font-bold opacity-70">{callingOfficer.rank} | {callingOfficer.dept}</p>
+              </div>
+              <button onClick={closeDispatch} className="ml-auto opacity-50 hover:opacity-100"><X size={24} /></button>
+            </div>
+
+            {/* 表单内容区 */}
+            <div className="p-8">
+              {dispatchStep === 'idle' || dispatchStep === 'form' ? (
+                <>
+                  {isSecretMode ? (
+                    // --- 里世界：风俗派单表单 ---
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 text-pink-500 mb-2">
+                        <Flame size={18} /> <h4 className="font-black tracking-widest uppercase">サービスコース選択</h4>
+                      </div>
+                      <div className="grid grid-cols-1 gap-3">
+                        {dispatchData.secret.services.map(svc => (
+                          <div 
+                            key={svc.id} 
+                            onClick={() => setSelectedService(svc)}
+                            className={`p-4 border cursor-pointer transition-all flex justify-between items-center ${selectedService.id === svc.id ? 'bg-pink-950/40 border-pink-500' : 'bg-zinc-900 border-zinc-800 hover:border-pink-900'}`}
+                          >
+                            <div>
+                              <div className="font-black text-white">{svc.name} <span className="text-[10px] text-pink-400 ml-2">{svc.duration}</span></div>
+                              <div className="text-[10px] text-zinc-500 mt-1">{svc.desc}</div>
+                            </div>
+                            <div className="font-mono font-black text-pink-500">¥{svc.price.toLocaleString()}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-4 border-t border-zinc-800">
+                        <h4 className="font-black text-sm text-zinc-400 mb-3">オプション (追加要求)</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {dispatchData.secret.addons.map(addon => (
+                            <button
+                              key={addon.id}
+                              onClick={() => toggleAddon(addon)}
+                              className={`px-3 py-1.5 text-xs font-bold border transition-colors ${selectedAddons.find(a=>a.id === addon.id) ? 'bg-pink-900 text-white border-pink-500' : 'bg-black text-zinc-500 border-zinc-800 hover:border-zinc-600'}`}
+                            >
+                              {addon.name} (+¥{addon.price.toLocaleString()})
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="bg-[#0f0a0c] p-4 border border-pink-900/30">
+                        <div className="flex justify-between items-end mb-2">
+                          <span className="text-sm font-bold text-zinc-500">予想請求額</span>
+                          <span className="text-3xl font-black text-pink-500 font-mono">¥{calculateTotal().toLocaleString()}</span>
+                        </div>
+                        <p className="text-[9px] text-pink-700 leading-tight">
+                          {dispatchData.secret.warning}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    // --- 表层世界：正规政务派单表单 ---
+                    <div className="space-y-6">
+                       <h4 className="font-black text-[#003366] text-lg border-b border-blue-50 pb-2">{dispatchData.surface.title}</h4>
+                       <div className="space-y-4">
+                         <div>
+                           <label className="block text-xs font-bold text-slate-500 mb-1">要請者の氏名</label>
+                           <input type="text" className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500" placeholder="例: 奈媛 太郎" />
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-500 mb-1">現在地 / 派遣先住所</label>
+                           <input type="text" className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500" placeholder="GPSロケーションを許可、または住所を入力" />
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-500 mb-1">事案の種類</label>
+                           <select className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500">
+                             {dispatchData.surface.incidentTypes.map((type, idx) => <option key={idx}>{type}</option>)}
+                           </select>
+                         </div>
+                         <p className="text-[10px] text-red-500 font-medium bg-red-50 p-2 border border-red-100">{dispatchData.surface.warning}</p>
+                       </div>
+                    </div>
+                  )}
+
+                  <div className="mt-8">
+                    <button 
+                      onClick={handleDispatchSubmit}
+                      className={`w-full py-4 font-black tracking-widest uppercase transition-transform active:scale-95 flex items-center justify-center gap-2 ${isSecretMode ? 'bg-pink-700 text-white shadow-[0_0_20px_rgba(190,24,93,0.4)] hover:bg-pink-600' : 'bg-[#003366] text-white hover:bg-[#002244]'}`}
+                    >
+                      <Send size={18} /> {isSecretMode ? '救済を確定し、警察官を呼び出す' : '緊急出動を要請する'}
+                    </button>
+                  </div>
+                </>
+              ) : dispatchStep === 'processing' ? (
+                // --- 处理中：打字机动画 ---
+                <div className="py-12 flex flex-col items-center justify-center font-mono space-y-6">
+                  <div className={`w-16 h-16 border-t-4 rounded-full animate-spin ${isSecretMode ? 'border-pink-600' : 'border-[#003366]'}`}></div>
+                  <div className={`text-sm font-black tracking-widest ${isSecretMode ? 'text-pink-500' : 'text-[#003366]'}`}>
+                    <p className="animate-pulse mb-2">{isSecretMode ? '> 市民スコアと所持ポイントを確認中...' : '> 通報内容を精査中...'}</p>
+                    <p className="animate-pulse delay-1000 mb-2" style={{animationDelay: '1s'}}>{isSecretMode ? '> 該当警察官のスケジュールを強制確保中...' : '> 地域課へ出動指令を送信中...'}</p>
+                    <p className="animate-pulse delay-2000" style={{animationDelay: '2s'}}>{isSecretMode ? '> パトカーのGPS偽装プロトコルを起動...' : '> 完了までしばらくお待ちください。'}</p>
+                  </div>
+                </div>
+              ) : (
+                // --- 成功派单 ---
+                <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 animate-in zoom-in-95">
+                  <div className={`w-20 h-20 rounded-full flex items-center justify-center mb-4 ${isSecretMode ? 'bg-pink-900/50 text-pink-500' : 'bg-green-100 text-green-600'}`}>
+                    <CheckCircle size={40} />
+                  </div>
+                  <h3 className={`text-3xl font-black ${isSecretMode ? 'text-white' : 'text-slate-800'}`}>派遣手配完了</h3>
+                  <p className={`text-sm font-bold leading-relaxed ${isSecretMode ? 'text-zinc-400' : 'text-slate-500'}`}>
+                    {isSecretMode 
+                      ? `要請が承認されました。\n${callingOfficer.name} ${callingOfficer.rank} が指定場所へ急行しています。\n（到着予定: 約7分後）\n準備をしてお待ちください。` 
+                      : `通報を受理しました。\n最寄りの警察官が現場へ向かっています。\n安全を確保してお待ちください。`}
+                  </p>
+                  <button 
+                    onClick={closeDispatch}
+                    className={`mt-6 px-8 py-3 font-bold ${isSecretMode ? 'bg-zinc-800 text-white hover:bg-zinc-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  >
+                    ダッシュボードに戻る
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* -------------------- 以下为派单主页面 UI -------------------- */}
       <div className="flex flex-col lg:flex-row gap-10 items-start">
+        
         {/* 左侧边栏 */}
         <aside className="w-full lg:w-56 space-y-12 shrink-0 sticky top-28">
           <section className="space-y-6">
-            <div className="flex items-center gap-3 border-b-2 border-blue-100 pb-3">
-              <Star className="text-amber-300 fill-amber-300" size={16} />
-              <h3 className="text-lg font-black text-[#556b82] tracking-tighter italic uppercase">
+            <div className={`flex items-center gap-3 border-b-2 pb-3 ${isSecretMode ? 'border-pink-900/50' : 'border-blue-100'}`}>
+              <Star 
+                onClick={handleSecretTrigger} 
+                className={`cursor-crosshair transition-all active:scale-75 ${isSecretMode ? 'text-pink-600 fill-pink-600 drop-shadow-[0_0_10px_#db2777]' : 'text-amber-300 fill-amber-300'}`} 
+                size={16} 
+              />
+              <h3 className={`text-lg font-black tracking-tighter italic uppercase ${isSecretMode ? 'text-pink-500' : 'text-[#556b82]'}`}>
                 トピックス
               </h3>
             </div>
-            <div className="bg-white p-3 border border-blue-50 space-y-4">
+            {/* ... 边栏推荐内容保持结构，颜色随模式切换 ... */}
+            <div className={`p-3 border space-y-4 ${isSecretMode ? 'bg-zinc-900/50 border-pink-900/30' : 'bg-white border-blue-50'}`}>
               <div className="aspect-[3/4] overflow-hidden relative group cursor-pointer shadow-inner bg-slate-100">
-                <img
-                  src={cast[0].img}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 opacity-90"
-                />
-                <div className="absolute top-2 left-2 bg-[#003366] text-white px-2 py-0.5 text-[7px] font-black italic tracking-widest uppercase">
-                  Pick Up
+                <img src={cast[0].img} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 opacity-90" />
+                <div className={`absolute top-2 left-2 text-white px-2 py-0.5 text-[7px] font-black italic tracking-widest uppercase ${isSecretMode ? 'bg-pink-700' : 'bg-[#003366]'}`}>
+                  {isSecretMode ? '今夜のオススメ' : 'Pick Up'}
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 leading-relaxed font-medium px-1">
-                点名率No.1キャスト。
+              <p className={`text-[10px] leading-relaxed font-medium px-1 ${isSecretMode ? 'text-zinc-400' : 'text-slate-400'}`}>
+                {isSecretMode ? '指名率No.1、中出し大歓迎の肉便器。' : '点名率No.1キャスト。'}
               </p>
-            </div>
-          </section>
-
-          <section className="space-y-6">
-            <div
-              className={`flex items-center gap-3 border-b-2 border-blue-100 pb-3 transition-all duration-700 ${
-                historyItemsVisible[0]
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
-            >
-              <Clock className="text-slate-300" size={18} />
-              <h3 className="text-lg font-black text-[#556b82] tracking-tighter italic uppercase">
-                履歴.
-              </h3>
-            </div>
-            <div className="space-y-3">
-              {cast.slice(0, 5).map((item, i) => (
-                <div
-                  key={i}
-                  className={`flex gap-3 items-center p-2 hover:bg-white transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer group ${
-                    historyItemsVisible[i]
-                      ? "opacity-100 translate-y-0 scale-100"
-                      : "opacity-0 translate-y-12 scale-90"
-                  }`}
-                >
-                  <div className="w-10 h-10 overflow-hidden shrink-0 border border-slate-100 shadow-sm">
-                    <img
-                      src={item.img}
-                      className="object-cover w-full h-full grayscale-[50%] group-hover:grayscale-0 transition-all"
-                    />
-                  </div>
-                  <div className="flex-1 overflow-hidden">
-                    <p
-                      className={`text-[10px] font-black group-hover:text-[#003366] transition-colors truncate ${
-                        activeHistoryIndex === i
-                          ? "text-[#003366]"
-                          : "text-slate-400"
-                      }`}
-                    >
-                      {item.name}
-                    </p>
-                    <p className="text-[8px] text-slate-300 font-bold uppercase tracking-widest">
-                      チェック履歴
-                    </p>
-                  </div>
-                </div>
-              ))}
             </div>
           </section>
         </aside>
 
         {/* 右侧网格 */}
         <div className="flex-1 space-y-10">
-          <header className="flex flex-col items-center text-center space-y-1">
-            <h2 className="text-5xl font-black text-[#003366] tracking-[0.2em]">
-              今日出勤
+          <header className="flex flex-col items-center text-center space-y-1 relative">
+            {isSecretMode && (
+              <div className="absolute top-0 flex justify-center w-full">
+                <span className="bg-pink-900 text-pink-200 text-[10px] font-black px-4 py-1 uppercase tracking-[0.5em] animate-pulse">
+                  Classified Delivery Network
+                </span>
+              </div>
+            )}
+            <h2 className={`text-5xl font-black tracking-[0.2em] transition-colors ${isSecretMode ? 'text-white mt-8' : 'text-[#003366]'}`}>
+              {isSecretMode ? '派遣待機一覧' : '今日出勤'}
             </h2>
             <div className="flex flex-col items-center gap-1 py-3">
-              <div className="flex items-center gap-3 text-sm font-bold text-slate-500">
+              <div className={`flex items-center gap-3 text-sm font-bold ${isSecretMode ? 'text-zinc-500' : 'text-slate-500'}`}>
                 本日出勤可能：
-                <span className="text-rose-500 text-xl font-black">58名</span>
-              </div>
-              <div className="flex items-center gap-4 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
-                明日 3月17日(火){" "}
-                <span className="w-1 h-1 bg-slate-200 rounded-full"></span>{" "}
-                出勤予定：42名
+                <span className={`${isSecretMode ? 'text-pink-500' : 'text-rose-500'} text-xl font-black`}>58名</span>
               </div>
             </div>
-            <div className="w-full max-w-[600px] h-[1px] bg-pink-100"></div>
+            <div className={`w-full max-w-[600px] h-[1px] ${isSecretMode ? 'bg-pink-900/50' : 'bg-pink-100'}`}></div>
           </header>
 
           <div className="space-y-4">
             <div className="flex justify-center w-full">
-              <h3 className="text-2xl font-black text-[#003366] tracking-[0.3em] uppercase italic text-center">
-                派遣可能な警察官
+              <h3 className={`text-2xl font-black tracking-[0.3em] uppercase italic text-center ${isSecretMode ? 'text-pink-600 drop-shadow-[0_0_10px_rgba(219,39,119,0.5)]' : 'text-[#003366]'}`}>
+                {isSecretMode ? '奉仕可能な雌犬たち' : '派遣可能な警察官'}
               </h3>
-            </div>
-            <div className="flex items-center gap-2 pl-2">
-              <div className="w-2.5 h-2.5 bg-emerald-400 animate-ping"></div>
-              <span className="text-[10px] font-black text-[#556b82] uppercase tracking-[0.2em]">
-                リアルタイム稼働中
-              </span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {slots.map((off, i) =>
               off.isPlaceholder ? (
-                <div
-                  key={i}
-                  className="w-[230px] h-[560.67px] bg-white/40 border border-dashed border-blue-100 flex flex-col items-center justify-center p-10 opacity-30"
-                >
-                  <Shield size={64} className="text-blue-100 mb-4" />
-                  <p className="text-[10px] font-bold text-blue-100 uppercase tracking-[0.3em]">
-                    未登録
-                  </p>
+                <div key={i} className={`w-[230px] h-[560.67px] border flex flex-col items-center justify-center p-10 opacity-30 ${isSecretMode ? 'bg-zinc-900/20 border-zinc-800' : 'bg-white/40 border-dashed border-blue-100'}`}>
+                  <Shield size={64} className="text-blue-100 mb-4 opacity-50" />
+                  <p className="text-[10px] font-bold text-blue-100 uppercase tracking-[0.3em]">未登録</p>
                 </div>
               ) : (
                 <div
                   key={i}
-                  onClick={() => setSelectedOfficer(off)}
-                  className="group w-[230px] h-[560.67px] flex flex-col bg-white shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 border border-blue-50 cursor-pointer overflow-hidden relative"
+                  className={`group w-[230px] h-[560.67px] flex flex-col shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 border cursor-pointer overflow-hidden relative ${isSecretMode ? 'bg-[#110a0d] border-pink-900/30' : 'bg-white border-blue-50'}`}
                 >
+                  {/* 警员图片与头部 */}
                   <div className="absolute top-0 left-0 right-0 z-20 flex justify-between p-2 pointer-events-none text-white">
                     <div className="flex gap-1">
                       {off.badges.map((b, idx) => (
-                        <span
-                          key={idx}
-                          className="bg-amber-400 px-2 py-0.5 text-[8px] font-black uppercase"
-                        >
+                        <span key={idx} className={`${isSecretMode ? 'bg-pink-700' : 'bg-amber-400'} px-2 py-0.5 text-[8px] font-black uppercase`}>
                           {b}
                         </span>
                       ))}
-                    </div>
-                    <div className="bg-black/60 px-2 py-0.5 text-[8px] font-mono font-bold">
-                      {off.shift}
                     </div>
                   </div>
                   <div className="h-[360px] relative overflow-hidden bg-slate-100">
                     <img
                       src={off.img}
-                      className={`object-cover w-full h-full transition-all duration-[10s] group-hover:scale-110 ${
-                        off.shift === "勤務終了"
-                          ? "grayscale opacity-30"
-                          : "opacity-95"
-                      }`}
+                      className={`object-cover w-full h-full transition-all duration-[10s] group-hover:scale-110 ${off.shift === "勤務終了" ? "grayscale opacity-30" : "opacity-95"}`}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h4 className="text-2xl font-black drop-shadow-lg tracking-tighter">
-                        {off.name}
-                      </h4>
-                      <p className="text-[10px] font-bold opacity-70 italic">
-                        年齢: {off.age}歳
-                      </p>
+                      <h4 className="text-2xl font-black drop-shadow-lg tracking-tighter">{off.name}</h4>
+                      <p className={`text-[10px] font-bold italic ${isSecretMode ? 'text-pink-300' : 'opacity-70'}`}>年齢: {off.age}歳</p>
                     </div>
                   </div>
+                  
+                  {/* 警员信息卡片 */}
                   <div className="flex-1 p-4 space-y-4">
                     <div className="space-y-2">
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-center gap-1.5">
-                          <div className="w-1 h-3 bg-blue-500"></div>
-                          <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                          <div className={`w-1 h-3 ${isSecretMode ? 'bg-pink-600' : 'bg-blue-500'}`}></div>
+                          <span className={`text-[10px] font-black uppercase tracking-widest ${isSecretMode ? 'text-white' : 'text-blue-600'}`}>
                             階級: {off.rank}
                           </span>
                         </div>
-                        <p className="text-[9px] font-bold text-slate-400 pl-2.5">
-                          所属: {off.dept}
-                        </p>
+                        <p className={`text-[9px] font-bold pl-2.5 ${isSecretMode ? 'text-zinc-500' : 'text-slate-400'}`}>所属: {off.dept}</p>
                       </div>
-                      <div className="bg-[#fcfdff] p-2.5 border border-blue-50 text-slate-400">
-                        <span className="text-[8px] font-black text-slate-300 uppercase block mb-1">
-                          スリーサイズ
-                        </span>
-                        <p className="text-[11px] font-bold font-mono tracking-tight">
-                          {off.size}
-                        </p>
+                      <div className={`p-2.5 border ${isSecretMode ? 'bg-zinc-900 border-zinc-800' : 'bg-[#fcfdff] border-blue-50'}`}>
+                        <span className={`text-[8px] font-black uppercase block mb-1 ${isSecretMode ? 'text-pink-600' : 'text-slate-300'}`}>スリーサイズ</span>
+                        <p className={`text-[11px] font-bold font-mono tracking-tight ${isSecretMode ? 'text-zinc-300' : 'text-slate-500'}`}>{off.size}</p>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+                    
+                    {/* 状态与呼叫按钮 */}
+                    <div className={`flex items-center justify-between pt-3 border-t ${isSecretMode ? 'border-zinc-800' : 'border-slate-50'}`}>
                       <div className="flex items-center gap-2">
-                        <div
-                          className={`w-2 h-2 ${
-                            off.status === "待機中"
-                              ? "bg-blue-400 animate-pulse"
-                              : off.status === "出動中"
-                              ? "bg-rose-400"
-                              : "bg-slate-300"
-                          }`}
-                        ></div>
-                        <span
-                          className={`text-[10px] font-black ${
-                            off.status === "待機中"
-                              ? "text-blue-500"
-                              : off.status === "出動中"
-                              ? "text-rose-500"
-                              : "text-slate-300"
-                          }`}
-                        >
-                          {off.status}
+                        {/* 动态显示表里状态 */}
+                        <div className={`w-2 h-2 ${
+                          off.status === "待機中" ? (isSecretMode ? "bg-pink-500 animate-pulse" : "bg-blue-400 animate-pulse") :
+                          off.status === "出動中" ? (isSecretMode ? "bg-red-600" : "bg-rose-400") : "bg-slate-500"
+                        }`}></div>
+                        <span className={`text-[10px] font-black ${
+                          off.status === "待機中" ? (isSecretMode ? "text-pink-500" : "text-blue-500") :
+                          off.status === "出動中" ? (isSecretMode ? "text-red-500" : "text-rose-500") : "text-slate-500"
+                        }`}>
+                          {/* 核心设定：表层出动中，里层显示接客中 */}
+                          {isSecretMode && off.status === "出動中" ? "接客中 (奉仕)" : off.status}
                         </span>
                       </div>
-                      <button className="w-10 h-10 bg-[#003366] hover:bg-[#002244] text-white flex items-center justify-center shadow-md active:scale-90">
+                      <button 
+                        onClick={() => setCallingOfficer(off)}
+                        disabled={off.shift === "勤務終了" || off.status === "出動中"}
+                        className={`w-10 h-10 flex items-center justify-center shadow-md active:scale-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isSecretMode ? 'bg-pink-700 hover:bg-pink-600 text-white' : 'bg-[#003366] hover:bg-[#002244] text-white'}`}
+                      >
                         <PhoneCall size={16} fill="currentColor" />
                       </button>
                     </div>
