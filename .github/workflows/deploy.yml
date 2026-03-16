@@ -20,15 +20,12 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install and Fix Dependencies
+      - name: Install and Build
         run: |
-          # 1. 强制安装正常版本的 ajv 及其缺失模块
-          npm install ajv ajv-keywords --save-dev
-          # 2. 忽略冲突安装其他依赖
+          # 所有安装指令都必须加上强行忽略冲突的后缀
           npm install --legacy-peer-deps
-
-      - name: Build
-        run: |
+          npm install ajv ajv-keywords --legacy-peer-deps
+          
           # 忽略警告直接打包
           export CI=false
           npm run build
