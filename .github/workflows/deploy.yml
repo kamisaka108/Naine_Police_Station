@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # 如果你的主分支叫 master，请改为 master
+      - main 
 
 permissions:
   contents: write
@@ -20,14 +20,21 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install and Build
+      - name: Install and Fix Dependencies
         run: |
-          export CI=false
+          # 1. 强制安装正常版本的 ajv 及其缺失模块
+          npm install ajv ajv-keywords --save-dev
+          # 2. 忽略冲突安装其他依赖
           npm install --legacy-peer-deps
+
+      - name: Build
+        run: |
+          # 忽略警告直接打包
+          export CI=false
           npm run build
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build # React 打包后的文件夹
-          branch: gh-pages # 部署到的分支
+          folder: build
+          branch: gh-pages
