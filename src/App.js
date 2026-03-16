@@ -642,51 +642,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
   );
 };
 
-  return (
-    <div className="space-y-12 py-10 animate-in slide-in-from-bottom-4 duration-700">
-      <h2 className="text-4xl font-black text-[#003366]">組織・職員案内</h2>
-      <div className="space-y-16">
-        {departments.map((dept) => (
-          <div
-            key={dept.id}
-            className="bg-white shadow-sm border border-blue-50"
-          >
-            <div className="bg-[#f8fafc] p-8 border-b border-blue-50 flex items-center gap-6">
-              <div className="p-4 bg-[#003366] text-white">{dept.icon}</div>
-              <h3 className="text-2xl font-black text-[#003366]">
-                {dept.name}
-              </h3>
-              <p className="max-w-md ml-auto text-sm text-gray-500 font-light">
-                {dept.desc}
-              </p>
-            </div>
-            <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-              {dept.officers.map((off) => (
-                <div
-                  key={off.id}
-                  onClick={() =>
-                    setSelectedOfficer({ ...off, dept: dept.name })
-                  }
-                  className="p-4 bg-gray-50 hover:border-[#003366] hover:bg-white border border-transparent transition-all cursor-pointer group flex items-center gap-4"
-                >
-                  <div className="w-12 h-12 bg-white border border-gray-200 flex items-center justify-center font-bold">
-                    {off.id}
-                  </div>
-                  <div>
-                    <h5 className="font-black text-[#003366] group-hover:underline">
-                      {off.name}
-                    </h5>
-                    <p className="text-[10px] text-gray-400">{off.rank}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
 const PublicationsView = () => (
   <div className="space-y-12 py-10">
     <h2 className="text-4xl font-black text-[#003366]">刊行物・資料センター</h2>
