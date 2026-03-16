@@ -7,7 +7,8 @@ import {
   Home,Send,MessageCircle,Monitor,
   X,
   Car,        // 新增：用于交通课
-  Briefcase   // 新增：用于刑事课
+  Briefcase, // 新增：用于刑事课
+  Lock, Unlock, ChevronLeft   
 } from "lucide-react";
 
 // ==========================================
@@ -31,7 +32,7 @@ const renderContent = () => {
       return <DispatchView setSelectedOfficer={setSelectedOfficer} />;
     case "depts":
       // ▼ 重点看这里：换成我们刚刚建好的“展柜” ▼
-      return <OrganizationView />; 
+      return <OrganizationView setActiveTab={setActiveTab} />; 
     case "publications":
       return <PublicationsView />;
     case "detention":
@@ -686,22 +687,159 @@ const DetentionView = () => (
 );
 
 // ==========================================
-// 组织案内视图 (部门结构展示)
+// 组织案内视图 (升级版：含沉浸式档案系统)
 // ==========================================
-const OrganizationView = () => {
-  // 默认选中第一个部门
+const OrganizationView = ({ setActiveTab }) => {
   const [activeDept, setActiveDept] = useState(departments[0]);
+  const [viewMode, setViewMode] = useState('dept'); // 'dept', 'list', 'detail'
+  const [activeOfficer, setActiveOfficer] = useState(null);
+  
+  // 记录已解锁深层情报的警员 ID
+  const [unlockedProfiles, setUnlockedProfiles] = useState(new Set());
+  // 控制 N.F 订阅弹窗
+  const [showModal, setShowModal] = useState(false);
 
-  // 用于将文本名称映射为真实图标的辅助对象
   const iconMap = {
-    Car: <Car size={20} />,
-    Shield: <Shield size={20} />,
-    Search: <Search size={20} />,
-    Briefcase: <Briefcase size={20} />,
-    Monitor: <Monitor size={20} />,
-    FileText: <FileText size={20} />
+    Car: <Car size={20} />, Shield: <Shield size={20} />, Search: <Search size={20} />,
+    Briefcase: <Briefcase size={20} />, Monitor: <Monitor size={20} />, FileText: <FileText size={20} />
   };
 
+  const handleDeptClick = (dept) => {
+    setActiveDept(dept);
+    setViewMode('dept');
+  };
+
+  const openOfficerDetail = (officer) => {
+    setActiveOfficer(officer);
+    setViewMode('detail');
+  };
+
+  const handleUnlockConfirm = () => {
+    setUnlockedProfiles(new Set(unlockedProfiles).add(activeOfficer.id));
+    setShowModal(false);
+  };
+
+  // 渲染：警员沉浸式档案 (全屏覆盖模式)
+  if (viewMode === 'detail' && activeOfficer) {
+    const isUnlocked = unlockedProfiles.has(activeOfficer.id);
+    
+    return (
+      <div className="h-[calc(100vh-64px)] bg-[#050505] flex relative animate-in zoom-in-95 duration-500 overflow-hidden">
+        {/* 左侧：放大的证件照 */}
+        <div className="w-1/2 h-full relative">
+          <img src={activeOfficer.img} className="w-full h-full object-cover opacity-80" alt={activeOfficer.name} />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#050505]/50 to-[#050505]"></div>
+          
+          <button 
+            onClick={() => setViewMode('list')}
+            className="absolute top-8 left-8 flex items-center gap-2 text-white/70 hover:text-white bg-black/40 px-4 py-2 rounded-full backdrop-blur-md transition-all border border-white/10 hover:bg-black/60 z-10"
+          >
+            <ChevronLeft size={18} /> リストに戻る (返回列表)
+          </button>
+
+          <div className="absolute bottom-12 left-12 text-white drop-shadow-2xl">
+            <h1 className="text-6xl font-black tracking-tighter mb-2">{activeOfficer.name}</h1>
+            <p className="text-xl font-bold text-amber-500 uppercase tracking-widest">{activeOfficer.rank} | {activeDept.name}</p>
+          </div>
+        </div>
+
+        {/* 右侧：详细情报区 */}
+        <div className="w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative">
+          <div className="max-w-xl mx-auto space-y-10 pb-20">
+            {/* 基础情报 (安全区) */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 border-b border-zinc-800 pb-2">
+                <FileText className="text-blue-500" size={20} />
+                <h3 className="text-xl font-black text-white tracking-widest">公開プロファイル (公开信息)</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-sm font-mono bg-zinc-900 p-4 border border-zinc-800 rounded">
+                <p><span className="text-zinc-500 mr-2">AGE:</span> {activeOfficer.age}</p>
+                <p><span className="text-zinc-500 mr-2">ROLE:</span> {activeOfficer.role}</p>
+                <p className="col-span-2"><span className="text-zinc-500 mr-2">SIZE:</span> <span className="text-amber-400">{activeOfficer.size}</span></p>
+              </div>
+              <div className="text-sm leading-relaxed whitespace-pre-line bg-zinc-900/50 p-5 rounded border-l-2 border-blue-500">
+                {activeOfficer.basicInfo}
+              </div>
+            </div>
+
+            {/* 深层情报 (加密区) */}
+            <div className="space-y-4 pt-6">
+              <div className="flex items-center gap-3 border-b border-zinc-800 pb-2">
+                {isUnlocked ? <Unlock className="text-pink-500" size={20} /> : <Lock className="text-rose-500" size={20} />}
+                <h3 className="text-xl font-black text-white tracking-widest">極秘レコード (N.F 深层情报)</h3>
+              </div>
+
+              {!isUnlocked ? (
+                // 未解锁状态的模糊诱导块
+                <div 
+                  onClick={() => setShowModal(true)}
+                  className="relative group cursor-pointer overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900"
+                >
+                  <div className="p-8 filter blur-sm opacity-30 select-none text-sm leading-relaxed h-48">
+                    [WARNING: CLASSIFIED DATA] This section contains highly sensitive behavioral logs, off-duty activities, and N.F platform performance metrics. Access restricted to Premium Subscribers only. 
+                  </div>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover:bg-black/80 transition-all">
+                    <Lock className="text-rose-500 mb-3 group-hover:scale-110 transition-transform" size={32} />
+                    <span className="text-rose-500 font-black tracking-widest text-sm border border-rose-500/50 px-6 py-2 bg-rose-950/50">
+                      タップしてロック解除 (点击解锁)
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                // 已解锁状态的露骨内容区
+                <div className="animate-in fade-in slide-in-from-top-4 duration-700 space-y-6">
+                  <div className="text-sm leading-relaxed whitespace-pre-line bg-[#1a0f14] p-6 rounded border border-pink-900/50 text-pink-100 shadow-[0_0_30px_rgba(190,24,93,0.1)]">
+                    {activeOfficer.hiddenInfo}
+                  </div>
+                  
+                  {/* 跳转 N.F 平台的诱导按钮 */}
+                  <button 
+                    onClick={() => setActiveTab('nf-platform')}
+                    className="w-full py-4 bg-gradient-to-r from-pink-700 to-rose-600 text-white font-black tracking-widest uppercase hover:scale-[1.02] transition-transform shadow-lg shadow-pink-900/50 flex justify-center items-center gap-2"
+                  >
+                    <Monitor size={18} /> N.F クリエイターページへ (前往她的主页)
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 订阅弹窗 Modal */}
+        {showModal && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-zinc-950 border border-pink-900 p-8 max-w-md w-full shadow-[0_0_50px_rgba(225,29,72,0.2)] text-center">
+              <div className="w-16 h-16 bg-pink-950/50 border border-pink-500 flex items-center justify-center mx-auto mb-6 rounded-full">
+                <Zap className="text-pink-500" size={30} />
+              </div>
+              <h3 className="text-2xl font-black text-white mb-2">プレミアム購読の確認</h3>
+              <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
+                対象: <span className="text-pink-400 font-bold">{activeOfficer.name}</span><br/>
+                彼女の N.F チャンネルを購読し、極秘の奉仕記録とプライベート映像を解禁しますか？<br/>
+                <span className="text-xs text-zinc-600 mt-2 block">(購読料が引き落とされます)</span>
+              </p>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 py-3 bg-zinc-900 text-zinc-400 font-bold hover:bg-zinc-800 transition-colors"
+                >
+                  否、検討する
+                </button>
+                <button 
+                  onClick={handleUnlockConfirm}
+                  className="flex-1 py-3 bg-pink-600 text-white font-black hover:bg-pink-500 transition-colors shadow-lg shadow-pink-900/50"
+                >
+                  是、支払う
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // 渲染：常规左右分栏界面 (部门概览 or 警员列表)
   return (
     <div className="flex h-[calc(100vh-64px)] bg-slate-50 text-slate-800">
       {/* 左侧部门导航栏 */}
@@ -714,16 +852,14 @@ const OrganizationView = () => {
           {departments.map((dept) => (
             <button
               key={dept.id}
-              onClick={() => setActiveDept(dept)}
+              onClick={() => handleDeptClick(dept)}
               className={`flex items-center p-3 rounded-lg transition-all ${
                 activeDept.id === dept.id
                   ? 'bg-blue-50 text-[#003366] font-bold border-l-4 border-[#003366]'
                   : 'text-slate-600 hover:bg-slate-100'
               }`}
             >
-              <div className="mr-3 text-slate-400">
-                {iconMap[dept.icon] || <Shield size={20} />}
-              </div>
+              <div className="mr-3 text-slate-400">{iconMap[dept.icon] || <Shield size={20} />}</div>
               <div className="text-left">
                 <div className="text-sm font-bold">{dept.name}</div>
                 <div className="text-xs text-slate-400">{dept.location}</div>
@@ -733,63 +869,127 @@ const OrganizationView = () => {
         </nav>
       </div>
 
-      {/* 右侧部门详细档案 */}
+      {/* 右侧内容区 */}
       <div className="flex-1 p-8 overflow-y-auto">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
-          {/* 头部标题区 */}
-          <div className="border-b border-slate-100 pb-6 mb-6 flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-800 mb-1">{activeDept.name}</h1>
-              <p className="text-slate-500">{activeDept.fullName}</p>
-            </div>
-            <div className="text-right bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
-              <div className="text-xs text-slate-400 font-bold mb-1">配置場所</div>
-              <div className="font-bold text-slate-700">{activeDept.location}</div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-8">
-            {/* 左列：职责与特色 */}
-            <div className="space-y-6">
+        {viewMode === 'dept' ? (
+          // --- 部门信息视图 ---
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 animate-in fade-in duration-500">
+            <div className="border-b border-slate-100 pb-6 mb-6 flex justify-between items-start">
               <div>
-                <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
-                  <Bookmark size={16} className="mr-2" /> 主要職責
-                </h3>
-                <p className="text-slate-700 leading-relaxed font-medium">
-                  {activeDept.role}
-                </p>
+                <h1 className="text-3xl font-bold text-slate-800 mb-1">{activeDept.name}</h1>
+                <p className="text-slate-500">{activeDept.fullName}</p>
               </div>
-              <div>
-                <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
-                  <Star size={16} className="mr-2" /> 部門特色
-                </h3>
-                <div className="bg-slate-50 p-5 rounded-lg border border-slate-100 text-slate-700 text-sm leading-relaxed whitespace-pre-line">
-                  {activeDept.feature}
-                </div>
+              <div className="text-right bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
+                <div className="text-xs text-slate-400 font-bold mb-1">配置場所</div>
+                <div className="font-bold text-slate-700">{activeDept.location}</div>
               </div>
             </div>
 
-            {/* 右列：人员与制服规定 */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between bg-blue-50 p-5 rounded-lg border border-blue-100">
-                <span className="font-bold text-[#003366] flex items-center">
-                  <Users size={18} className="mr-2" /> 人員配置
-                </span>
-                <span className="text-2xl font-black text-[#003366]">{activeDept.staff} 名</span>
+            <div className="grid grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
+                    <Bookmark size={16} className="mr-2" /> 主要職責
+                  </h3>
+                  <p className="text-slate-700 leading-relaxed font-medium">{activeDept.role}</p>
+                </div>
+                <div>
+                  <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
+                    <Star size={16} className="mr-2" /> 部門特色
+                  </h3>
+                  <div className="bg-slate-50 p-5 rounded-lg border border-slate-100 text-slate-700 text-sm leading-relaxed whitespace-pre-line">
+                    {activeDept.feature}
+                  </div>
+                </div>
               </div>
-              
-              <div>
-                <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
-                  <Layers size={16} className="mr-2" /> 服装規定 (制服要件)
-                </h3>
-                {/* 这里的 whitespace-pre-line 可以让你在 data.js 里敲的回车直接换行 */}
-                <div className="bg-slate-800 text-slate-200 p-5 rounded-lg text-sm leading-relaxed border-l-4 border-[#f39800] shadow-inner whitespace-pre-line">
-                  {activeDept.uniform}
+
+              <div className="space-y-6">
+                {/* 核心交互入口：点击人员配置 */}
+                <div 
+                  onClick={() => setViewMode('list')}
+                  className="flex items-center justify-between bg-blue-50 p-5 rounded-lg border border-blue-200 cursor-pointer hover:bg-blue-100 hover:shadow-md transition-all group"
+                >
+                  <span className="font-bold text-[#003366] flex items-center">
+                    <Users size={18} className="mr-2" /> 人員配置 (名单查看)
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-black text-[#003366]">{activeDept.staff} 名</span>
+                    <ChevronRight className="text-blue-400 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
+                    <Layers size={16} className="mr-2" /> 服装規定 (制服要件)
+                  </h3>
+                  <div className="bg-slate-800 text-slate-200 p-5 rounded-lg text-sm leading-relaxed border-l-4 border-[#f39800] shadow-inner whitespace-pre-line">
+                    {activeDept.uniform}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          // --- 课室直属警员名单视图 ---
+          <div className="animate-in slide-in-from-right-8 duration-500">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-black text-[#003366] flex items-center gap-3">
+                  <Users size={24} /> {activeDept.name} 直属名簿
+                </h2>
+                <p className="text-sm text-slate-500 mt-1">Personnel Roster & Classified Files</p>
+              </div>
+              <button 
+                onClick={() => setViewMode('dept')}
+                className="text-sm font-bold text-slate-500 hover:text-[#003366] flex items-center gap-1 bg-white px-4 py-2 rounded shadow-sm border"
+              >
+                <ChevronLeft size={16} /> 戻る (返回)
+              </button>
+            </div>
+
+            {/* 警员卡片网格 */}
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-6">
+              {activeDept.roster && activeDept.roster.length > 0 ? (
+                activeDept.roster.map((officer) => (
+                  <div 
+                    key={officer.id}
+                    onClick={() => openOfficerDetail(officer)}
+                    className="bg-white border-2 border-slate-100 hover:border-[#003366] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex group rounded-r-lg overflow-hidden relative"
+                  >
+                    {/* 卡片左侧：照片 */}
+                    <div className="w-24 h-32 bg-slate-200 shrink-0 overflow-hidden relative">
+                      <img src={officer.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    {/* 卡片右侧：别致的信息排版 */}
+                    <div className="p-4 flex flex-col justify-center relative flex-1">
+                      {/* 背景装饰编号 */}
+                      <span className="absolute top-1 right-2 text-4xl font-black italic text-slate-50 select-none -z-0">
+                        {officer.id.substring(0,4).toUpperCase()}
+                      </span>
+                      <div className="relative z-10">
+                        <span className="text-[10px] font-black tracking-widest text-[#f39800] uppercase block mb-1">
+                          {officer.rank}
+                        </span>
+                        <h4 className="text-lg font-black text-slate-800 tracking-tight leading-none mb-2">
+                          {officer.name}
+                        </h4>
+                        <p className="text-xs text-slate-500 font-bold truncate">
+                          ID: NCPD-{Math.floor(Math.random() * 9000) + 1000}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center text-slate-400 font-bold border-2 border-dashed border-slate-200 rounded-lg">
+                  この部署には現在登録されている人員データがありません。<br/>
+                  (该部门暂无录入警员数据)
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
