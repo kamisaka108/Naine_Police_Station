@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { navItems, slides, cast, nfTags, nfHotLives, nfFixedFeeds } from './data';
+import { navItems, slides, cast, nfTags, nfHotLives, nfFixedFeeds, departments } from './data';
 import {
   Shield,Users,Lock,Search,ChevronRight,ChevronLeft,ChevronDown,FileText,
   Camera,BookOpen,Info,Eye,Radio,Video,Award,Zap,Play,Pause,TrendingUp,Clock,
