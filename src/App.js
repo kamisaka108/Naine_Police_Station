@@ -687,7 +687,7 @@ const DetentionView = () => (
 );
 
 // ==========================================
-// 组织案内视图 (升级版：含沉浸式档案系统)
+// 组织案内视图 (终极版：丝滑展开 + 左右翻页)
 // ==========================================
 const OrganizationView = ({ setActiveTab }) => {
   const [activeDept, setActiveDept] = useState(departments[0]);
@@ -696,7 +696,6 @@ const OrganizationView = ({ setActiveTab }) => {
   
   // 记录已解锁深层情报的警员 ID
   const [unlockedProfiles, setUnlockedProfiles] = useState(new Set());
-  // 控制 N.F 订阅弹窗
   const [showModal, setShowModal] = useState(false);
 
   const iconMap = {
@@ -719,12 +718,50 @@ const OrganizationView = ({ setActiveTab }) => {
     setShowModal(false);
   };
 
+  // 左右切换警员的逻辑
+  const handlePrevOfficer = () => {
+    if (!activeDept.roster) return;
+    const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
+    // 如果是第一个，就跳转到最后一个 (循环切换)
+    const prevIndex = currentIndex === 0 ? activeDept.roster.length - 1 : currentIndex - 1;
+    setActiveOfficer(activeDept.roster[prevIndex]);
+  };
+
+  const handleNextOfficer = () => {
+    if (!activeDept.roster) return;
+    const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
+    // 如果是最后一个，就跳转到第一个 (循环切换)
+    const nextIndex = currentIndex === activeDept.roster.length - 1 ? 0 : currentIndex + 1;
+    setActiveOfficer(activeDept.roster[nextIndex]);
+  };
+
   // 渲染：警员沉浸式档案 (全屏覆盖模式)
   if (viewMode === 'detail' && activeOfficer) {
     const isUnlocked = unlockedProfiles.has(activeOfficer.id);
     
     return (
-      <div className="h-[calc(100vh-64px)] bg-[#050505] flex relative animate-in zoom-in-95 duration-500 overflow-hidden">
+      // 添加 key={activeOfficer.id} 让每次切换警员都能重新触发入场动画
+      // duration-1000 ease-out 带来缓慢、平滑的张开动效
+      <div key={activeOfficer.id} className="h-[calc(100vh-64px)] bg-[#050505] flex relative animate-in fade-in zoom-in-95 duration-1000 ease-out overflow-hidden">
+        
+        {/* 左右两侧的切换箭头 (只有当该部门有多于1名警员时才显示) */}
+        {activeDept.roster && activeDept.roster.length > 1 && (
+          <>
+            <button 
+              onClick={handlePrevOfficer}
+              className="absolute left-6 top-1/2 -translate-y-1/2 z-[60] w-16 h-16 flex items-center justify-center rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-pink-600 hover:border-pink-500 backdrop-blur-md transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)] group"
+            >
+              <ChevronLeft size={36} className="group-hover:-translate-x-1 transition-transform" />
+            </button>
+            <button 
+              onClick={handleNextOfficer}
+              className="absolute right-6 top-1/2 -translate-y-1/2 z-[60] w-16 h-16 flex items-center justify-center rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-pink-600 hover:border-pink-500 backdrop-blur-md transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)] group"
+            >
+              <ChevronRight size={36} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </>
+        )}
+
         {/* 左侧：放大的证件照 */}
         <div className="w-1/2 h-full relative">
           <img src={activeOfficer.img} className="w-full h-full object-cover opacity-80" alt={activeOfficer.name} />
@@ -737,14 +774,14 @@ const OrganizationView = ({ setActiveTab }) => {
             <ChevronLeft size={18} /> リストに戻る (返回列表)
           </button>
 
-          <div className="absolute bottom-12 left-12 text-white drop-shadow-2xl">
+          <div className="absolute bottom-12 left-12 right-12 text-white drop-shadow-2xl">
             <h1 className="text-6xl font-black tracking-tighter mb-2">{activeOfficer.name}</h1>
             <p className="text-xl font-bold text-amber-500 uppercase tracking-widest">{activeOfficer.rank} | {activeDept.name}</p>
           </div>
         </div>
 
         {/* 右侧：详细情报区 */}
-        <div className="w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative">
+        <div className="w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative z-20">
           <div className="max-w-xl mx-auto space-y-10 pb-20">
             {/* 基础情报 (安全区) */}
             <div className="space-y-4">
@@ -791,7 +828,23 @@ const OrganizationView = ({ setActiveTab }) => {
                   <div className="text-sm leading-relaxed whitespace-pre-line bg-[#1a0f14] p-6 rounded border border-pink-900/50 text-pink-100 shadow-[0_0_30px_rgba(190,24,93,0.1)]">
                     {activeOfficer.hiddenInfo}
                   </div>
-                  
+                  {/* 新增：两张私密照片并排展示栏 */}
+                  {(activeOfficer.hiddenImg1 || activeOfficer.hiddenImg2) && (
+                    <div className="flex gap-4 w-full">
+                      {activeOfficer.hiddenImg1 && (
+                        <div className="flex-1 h-48 bg-[#0a0508] rounded border border-pink-900/30 overflow-hidden relative group cursor-pointer shadow-inner">
+                          <img src={activeOfficer.hiddenImg1} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="Classified File 1" />
+                          <div className="absolute inset-0 ring-1 ring-inset ring-pink-500/20 pointer-events-none"></div>
+                        </div>
+                      )}
+                      {activeOfficer.hiddenImg2 && (
+                        <div className="flex-1 h-48 bg-[#0a0508] rounded border border-pink-900/30 overflow-hidden relative group cursor-pointer shadow-inner">
+                          <img src={activeOfficer.hiddenImg2} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="Classified File 2" />
+                          <div className="absolute inset-0 ring-1 ring-inset ring-pink-500/20 pointer-events-none"></div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                   {/* 跳转 N.F 平台的诱导按钮 */}
                   <button 
                     onClick={() => setActiveTab('nf-platform')}
@@ -807,7 +860,7 @@ const OrganizationView = ({ setActiveTab }) => {
 
         {/* 订阅弹窗 Modal */}
         {showModal && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-zinc-950 border border-pink-900 p-8 max-w-md w-full shadow-[0_0_50px_rgba(225,29,72,0.2)] text-center">
               <div className="w-16 h-16 bg-pink-950/50 border border-pink-500 flex items-center justify-center mx-auto mb-6 rounded-full">
                 <Zap className="text-pink-500" size={30} />
