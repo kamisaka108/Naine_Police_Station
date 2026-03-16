@@ -8,7 +8,8 @@ import {
   X,
   Car,        // 新增：用于交通课
   Briefcase, // 新增：用于刑事课
-  Lock, Unlock, ChevronLeft   
+  Unlock, 
+  ChevronLeft   
 } from "lucide-react";
 
 // ==========================================
