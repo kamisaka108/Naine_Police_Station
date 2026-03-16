@@ -9,7 +9,8 @@ import {
   X,
   Car,        // 新增：用于交通课
   Briefcase, // 新增：用于刑事课
-  Unlock
+  Unlock,
+  CheckCircle
 } from "lucide-react";
 
 // ==========================================
@@ -394,30 +395,25 @@ const HomeView = ({ setActiveTab }) => {
 };
 
 // ==========================================
-// 紧急救济派单视图 (UI重构版：全宽雷达 + 弹窗锁定)
+// 紧急救济派单视图 (终极版：带雷达扫描 + 修复白屏)
 // ==========================================
 const DispatchView = ({ setSelectedOfficer }) => {
-  // --- 表里世界核心状态 ---
   const [clickCount, setClickCount] = useState(0); 
   const [isSecretMode, setIsSecretMode] = useState(false); 
   const [showVerifyModal, setShowVerifyModal] = useState(false); 
   const [idInput, setIdInput] = useState(''); 
   const [verifyError, setVerifyError] = useState('');
   
-  // --- 派单与锁定状态 ---
   const [callingOfficer, setCallingOfficer] = useState(null); 
   const [isProcessing, setIsProcessing] = useState(false); 
   const [showSuccessModal, setShowSuccessModal] = useState(false); 
-  const [hasPendingDispatch, setHasPendingDispatch] = useState(false); // 派单锁定开关
+  const [hasPendingDispatch, setHasPendingDispatch] = useState(false); 
 
-  // --- 里世界表单状态 ---
   const [selectedService, setSelectedService] = useState(dispatchData.secret.services[0]);
   const [selectedAddons, setSelectedAddons] = useState([]);
 
-  // 补齐 10 个展示位
   const slots = Array.from({ length: 10 }, (_, i) => cast[i] || { isPlaceholder: true });
 
-  // --- 暗门触发逻辑 (点击标题旁的星星 3 次) ---
   const handleSecretTrigger = () => {
     if (isSecretMode) return;
     const newCount = clickCount + 1;
@@ -428,7 +424,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
     }
   };
 
-  // --- 身份验证逻辑 ---
   const handleVerify = () => {
     if (idInput.length === 12 && /^\d+$/.test(idInput)) {
       setShowVerifyModal(false);
@@ -438,15 +433,13 @@ const DispatchView = ({ setSelectedOfficer }) => {
     }
   };
 
-  // --- 提交派单逻辑 ---
   const handleDispatchSubmit = () => {
     setIsProcessing(true);
-    // 模拟 3.5秒 的系统处理动画
     setTimeout(() => {
       setIsProcessing(false);
-      setCallingOfficer(null); // 关闭表单
-      setShowSuccessModal(true); // 打开成功弹窗
-      setHasPendingDispatch(true); // 锁定全局呼叫按钮
+      setCallingOfficer(null); 
+      setShowSuccessModal(true); // 此时会渲染 CheckCircle，导入后就不会白屏了
+      setHasPendingDispatch(true); 
     }, 3500);
   };
 
@@ -467,7 +460,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
     return selectedService.price + selectedAddons.reduce((sum, a) => sum + a.price, 0);
   };
 
-  // --- 状态灯文本转换器 ---
   const getStatusDisplay = (status, shift) => {
     if (shift === "勤務終了") return { color: 'bg-amber-400', text: isSecretMode ? '🟡 ザーメン処理・補給中' : '🟡 返回警局補給中', disable: true };
     if (status === '待機中') return { color: 'bg-emerald-500', text: isSecretMode ? '🟢 待機中 / 奉仕可能' : '🟢 待機中 / 可呼叫', disable: false };
@@ -477,15 +469,13 @@ const DispatchView = ({ setSelectedOfficer }) => {
 
   return (
     <>
-      {/* 全屏暗黑遮罩：解决白边问题，不影响外部 App.js 结构 */}
       {isSecretMode && (
         <div className="fixed inset-0 bg-[#0a0508] transition-opacity duration-1000" style={{ zIndex: 0 }} />
       )}
 
-      {/* 确保内容在遮罩之上 */}
       <div className={`relative z-10 py-6 animate-in fade-in duration-1000 min-h-screen transition-colors duration-700 ${isSecretMode ? 'text-zinc-300' : 'text-[#333]'}`}>
         
-        {/* 1. 身份验证弹窗 (暗门) */}
+        {/* 1. 身份验证弹窗 */}
         {showVerifyModal && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm">
             <div className="bg-zinc-950 border border-pink-900 p-8 w-full max-w-md shadow-[0_0_50px_rgba(225,29,72,0.2)] animate-in zoom-in-95 font-mono">
@@ -514,7 +504,7 @@ const DispatchView = ({ setSelectedOfficer }) => {
           </div>
         )}
 
-        {/* 2. 派单成功提示弹窗 (阻止白屏) */}
+        {/* 2. 派单成功提示弹窗 (已修复白屏) */}
         {showSuccessModal && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
             <div className={`w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 border text-center ${isSecretMode ? 'bg-zinc-950 border-pink-900/50 text-zinc-300' : 'bg-white border-blue-200 text-[#333]'}`}>
@@ -541,7 +531,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
         {callingOfficer && (
           <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-md animate-in fade-in p-4">
             <div className={`w-full max-w-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 ${isSecretMode ? 'bg-zinc-950 border border-pink-900/50 text-zinc-300' : 'bg-white border border-blue-100 text-[#333]'}`}>
-              
               <div className={`p-6 flex items-center gap-6 border-b ${isSecretMode ? 'bg-[#1a0f14] border-pink-900/30' : 'bg-blue-50/50 border-blue-50'}`}>
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-current shrink-0">
                   <img src={callingOfficer.img} className="w-full h-full object-cover" alt={callingOfficer.name} />
@@ -557,7 +546,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
 
               <div className="p-8">
                 {isProcessing ? (
-                  // 处理中动画
                   <div className="py-12 flex flex-col items-center justify-center font-mono space-y-6">
                     <div className={`w-16 h-16 border-t-4 rounded-full animate-spin ${isSecretMode ? 'border-pink-600' : 'border-[#003366]'}`}></div>
                     <div className={`text-sm font-black tracking-widest ${isSecretMode ? 'text-pink-500' : 'text-[#003366]'}`}>
@@ -567,7 +555,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
                     </div>
                   </div>
                 ) : (
-                  // 填写表单
                   <>
                     {isSecretMode ? (
                       <div className="space-y-6">
@@ -637,36 +624,51 @@ const DispatchView = ({ setSelectedOfficer }) => {
           </div>
         )}
 
-        {/* -------------------- 主页面 UI (已删除无用侧边栏) -------------------- */}
-        <div className="max-w-[1400px] mx-auto space-y-12">
+        <div className="max-w-[1400px] mx-auto space-y-12 px-4">
           
-          {/* 雷达大盘风格头部 */}
-          <header className={`relative p-8 border-b-4 ${isSecretMode ? 'bg-[#0f0a0c] border-pink-900/50' : 'bg-white border-[#003366] shadow-sm'}`}>
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-4">
-                {/* 触发暗门的星星放在最显眼的安全位置 */}
-                <div onClick={handleSecretTrigger} className="cursor-crosshair w-16 h-16 flex items-center justify-center rounded-full bg-slate-100 group">
-                  <Star className={`transition-all duration-300 ${isSecretMode ? 'text-pink-600 fill-pink-600 drop-shadow-[0_0_15px_#db2777] scale-125' : 'text-amber-400 fill-amber-400 group-hover:scale-110'}`} size={32} />
+          {/* =======================================
+              雷达大盘风格头部 (自带 CSS 雷达扫描动画)
+             ======================================= */}
+          <header className={`relative p-10 border-b-4 overflow-hidden rounded-xl ${isSecretMode ? 'bg-[#0f0a0c] border-pink-900/50' : 'bg-[#001833] border-[#003366] shadow-xl'}`}>
+            
+            {/* 雷达动态背景 */}
+            <div className="absolute inset-0 pointer-events-none opacity-50">
+              {/* 雷达网格 */}
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+              {/* 同心圆 */}
+              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full ${isSecretMode ? 'border-pink-500/20' : 'border-emerald-500/20'}`}></div>
+              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border rounded-full ${isSecretMode ? 'border-pink-500/20' : 'border-emerald-500/20'}`}></div>
+              {/* 旋转扫面扇形 */}
+              <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 animate-spin [animation-duration:4s]">
+                <div className={`w-1/2 h-1/2 rounded-tl-full border-l-2 ${isSecretMode ? 'bg-gradient-to-br from-pink-600/40 to-transparent border-pink-500' : 'bg-gradient-to-br from-emerald-500/40 to-transparent border-emerald-400'}`}></div>
+              </div>
+            </div>
+
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-6">
+                {/* 触发暗门的星星 */}
+                <div onClick={handleSecretTrigger} className={`cursor-crosshair w-20 h-20 flex items-center justify-center rounded-full border-4 backdrop-blur-md group ${isSecretMode ? 'bg-pink-900/40 border-pink-600 shadow-[0_0_30px_#db2777]' : 'bg-white/10 border-white/20'}`}>
+                  <Star className={`transition-all duration-300 ${isSecretMode ? 'text-pink-400 fill-pink-400 scale-125' : 'text-emerald-400 fill-emerald-400 group-hover:scale-110'}`} size={36} />
                 </div>
                 <div>
-                  <h2 className={`text-4xl font-black tracking-widest ${isSecretMode ? 'text-white' : 'text-[#003366]'}`}>
+                  <h2 className={`text-4xl md:text-5xl font-black tracking-widest text-white drop-shadow-md`}>
                     {isSecretMode ? '機密派遣ネットワーク' : '緊急出動管制センター'}
                   </h2>
-                  <p className={`text-xs font-bold uppercase tracking-[0.3em] mt-1 ${isSecretMode ? 'text-pink-600' : 'text-slate-400'}`}>
+                  <p className={`text-sm font-bold uppercase tracking-[0.4em] mt-2 ${isSecretMode ? 'text-pink-400 drop-shadow-[0_0_5px_#db2777]' : 'text-emerald-400 drop-shadow-[0_0_5px_#10b981]'}`}>
                     {isSecretMode ? 'NCPD Delivery Health System' : 'Real-time Dispatch Control'}
                   </p>
                 </div>
               </div>
 
-              <div className={`flex gap-6 p-4 border ${isSecretMode ? 'border-pink-900/30 bg-black' : 'border-blue-50 bg-slate-50'}`}>
-                <div className="text-center px-4 border-r border-slate-200/20">
+              <div className={`flex gap-6 p-4 border backdrop-blur-sm rounded-lg ${isSecretMode ? 'border-pink-900/50 bg-black/60' : 'border-blue-400/30 bg-black/40'}`}>
+                <div className="text-center px-4 border-r border-white/10">
                   <p className={`text-[10px] font-bold uppercase ${isSecretMode ? 'text-zinc-500' : 'text-slate-400'}`}>稼働中</p>
-                  <p className={`text-2xl font-black ${isSecretMode ? 'text-white' : 'text-[#003366]'}`}>58<span className="text-xs ml-1">名</span></p>
+                  <p className="text-3xl font-black text-white">58<span className="text-xs ml-1 text-white/50">名</span></p>
                 </div>
                 <div className="text-center px-4">
                   <p className={`text-[10px] font-bold uppercase ${isSecretMode ? 'text-zinc-500' : 'text-slate-400'}`}>要請ロック</p>
-                  {/* 如果处于派单锁定状态，这里会变红警告 */}
-                  <p className={`text-2xl font-black ${hasPendingDispatch ? 'text-rose-500 animate-pulse' : (isSecretMode ? 'text-pink-500' : 'text-emerald-500')}`}>
+                  {/* 派单锁定状态报警 */}
+                  <p className={`text-3xl font-black ${hasPendingDispatch ? 'text-rose-500 animate-pulse drop-shadow-[0_0_8px_#f43f5e]' : (isSecretMode ? 'text-pink-500' : 'text-emerald-400')}`}>
                     {hasPendingDispatch ? 'LOCKED' : 'ACTIVE'}
                   </p>
                 </div>
@@ -686,13 +688,11 @@ const DispatchView = ({ setSelectedOfficer }) => {
                 );
               }
 
-              // 获取当前警员的状态灯配置
               const statusDisplay = getStatusDisplay(off.status, off.shift);
 
               return (
                 <div key={i} className={`group w-[230px] h-[560.67px] flex flex-col shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 border overflow-hidden relative ${isSecretMode ? 'bg-[#110a0d] border-pink-900/30' : 'bg-white border-blue-50'}`}>
                   
-                  {/* 徽章 */}
                   <div className="absolute top-0 left-0 right-0 z-20 flex justify-between p-2 pointer-events-none text-white">
                     <div className="flex gap-1">
                       {off.badges.map((b, idx) => (
@@ -701,7 +701,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
                     </div>
                   </div>
 
-                  {/* 照片区 */}
                   <div className="h-[360px] relative overflow-hidden bg-slate-100">
                     <img src={off.img} className={`object-cover w-full h-full transition-all duration-700 group-hover:scale-105 ${statusDisplay.disable ? "grayscale opacity-40" : "opacity-95"}`} />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -711,7 +710,6 @@ const DispatchView = ({ setSelectedOfficer }) => {
                     </div>
                   </div>
                   
-                  {/* 信息与状态区 */}
                   <div className="flex-1 p-4 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
                       <div className="flex flex-col gap-0.5">
@@ -727,24 +725,20 @@ const DispatchView = ({ setSelectedOfficer }) => {
                       </div>
                     </div>
                     
-                    {/* 状态灯与呼叫按钮 (完美实现 🟢🔴🟡 逻辑) */}
                     <div className={`flex items-center justify-between pt-3 border-t ${isSecretMode ? 'border-zinc-800' : 'border-slate-50'}`}>
                       <div className="flex items-center gap-2">
-                        {/* 动态圆点颜色 */}
                         <div className={`w-2 h-2 rounded-full ${statusDisplay.color} ${!statusDisplay.disable ? 'animate-pulse' : ''}`}></div>
-                        {/* 动态文本说明 */}
                         <span className={`text-[10px] font-black ${isSecretMode ? 'text-zinc-300' : 'text-slate-600'}`}>
                           {statusDisplay.text}
                         </span>
                       </div>
 
-                      {/* 呼叫按钮：受到状态或全局锁定控制 */}
                       <button 
                         onClick={() => setCallingOfficer(off)}
                         disabled={statusDisplay.disable || hasPendingDispatch}
                         className={`w-10 h-10 flex items-center justify-center shadow-md transition-all 
                           ${statusDisplay.disable || hasPendingDispatch 
-                            ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed opacity-50' // 被锁定或不可用的灰色状态
+                            ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed opacity-50' 
                             : isSecretMode 
                               ? 'bg-pink-700 hover:bg-pink-600 text-white active:scale-90' 
                               : 'bg-[#003366] hover:bg-[#002244] text-white active:scale-90'
