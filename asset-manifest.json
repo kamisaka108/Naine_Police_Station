@@ -1,10 +1,13 @@
 {
   "files": {
+    "main.css": "/Naine_Police_Station/static/css/main.ef4917fc.css",
     "main.js": "/Naine_Police_Station/static/js/main.23dc7053.js",
     "index.html": "/Naine_Police_Station/index.html",
+    "main.ef4917fc.css.map": "/Naine_Police_Station/static/css/main.ef4917fc.css.map",
     "main.23dc7053.js.map": "/Naine_Police_Station/static/js/main.23dc7053.js.map"
   },
   "entrypoints": [
+    "static/css/main.ef4917fc.css",
     "static/js/main.23dc7053.js"
   ]
 }
