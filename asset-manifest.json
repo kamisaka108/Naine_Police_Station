@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Naine_Police_Station/static/css/main.51e272c5.css",
-    "main.js": "/Naine_Police_Station/static/js/main.801aee17.js",
+    "main.js": "/Naine_Police_Station/static/js/main.68dd9068.js",
     "index.html": "/Naine_Police_Station/index.html",
     "main.51e272c5.css.map": "/Naine_Police_Station/static/css/main.51e272c5.css.map",
-    "main.801aee17.js.map": "/Naine_Police_Station/static/js/main.801aee17.js.map"
+    "main.68dd9068.js.map": "/Naine_Police_Station/static/js/main.68dd9068.js.map"
   },
   "entrypoints": [
     "static/css/main.51e272c5.css",
-    "static/js/main.801aee17.js"
+    "static/js/main.68dd9068.js"
   ]
 }
