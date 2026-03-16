@@ -687,7 +687,7 @@ const DetentionView = () => (
 );
 
 // ==========================================
-// 组织案内视图 (终极版：丝滑展开 + 左右翻页)
+// 组织案内视图 (究极质感版：丝滑展开 + 平移翻页)
 // ==========================================
 const OrganizationView = ({ setActiveTab }) => {
   const [activeDept, setActiveDept] = useState(departments[0]);
@@ -697,6 +697,9 @@ const OrganizationView = ({ setActiveTab }) => {
   // 记录已解锁深层情报的警员 ID
   const [unlockedProfiles, setUnlockedProfiles] = useState(new Set());
   const [showModal, setShowModal] = useState(false);
+  
+  // 新增：追踪动画的滑动方向 ('up' 为初次打开, 'left'/'right' 为左右切换)
+  const [slideDirection, setSlideDirection] = useState('up');
 
   const iconMap = {
     Car: <Car size={20} />, Shield: <Shield size={20} />, Search: <Search size={20} />,
@@ -709,6 +712,7 @@ const OrganizationView = ({ setActiveTab }) => {
   };
 
   const openOfficerDetail = (officer) => {
+    setSlideDirection('up'); // 初次点开时，设定为从下方缓慢浮现
     setActiveOfficer(officer);
     setViewMode('detail');
   };
@@ -718,19 +722,19 @@ const OrganizationView = ({ setActiveTab }) => {
     setShowModal(false);
   };
 
-  // 左右切换警员的逻辑
+  // 左右切换逻辑：加入方向追踪
   const handlePrevOfficer = () => {
     if (!activeDept.roster) return;
+    setSlideDirection('left'); // 向左翻页的动效
     const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
-    // 如果是第一个，就跳转到最后一个 (循环切换)
     const prevIndex = currentIndex === 0 ? activeDept.roster.length - 1 : currentIndex - 1;
     setActiveOfficer(activeDept.roster[prevIndex]);
   };
 
   const handleNextOfficer = () => {
     if (!activeDept.roster) return;
+    setSlideDirection('right'); // 向右翻页的动效
     const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
-    // 如果是最后一个，就跳转到第一个 (循环切换)
     const nextIndex = currentIndex === activeDept.roster.length - 1 ? 0 : currentIndex + 1;
     setActiveOfficer(activeDept.roster[nextIndex]);
   };
@@ -739,12 +743,20 @@ const OrganizationView = ({ setActiveTab }) => {
   if (viewMode === 'detail' && activeOfficer) {
     const isUnlocked = unlockedProfiles.has(activeOfficer.id);
     
+    // 根据滑动方向动态生成 Tailwind 动画类名
+    const imgAnimateClass = slideDirection === 'right' ? 'slide-in-from-right-12' 
+                          : slideDirection === 'left' ? 'slide-in-from-left-12' 
+                          : 'slide-in-from-bottom-8 zoom-in-95';
+                          
+    const textAnimateClass = slideDirection === 'right' ? 'slide-in-from-right-8' 
+                           : slideDirection === 'left' ? 'slide-in-from-left-8' 
+                           : 'slide-in-from-bottom-12';
+
     return (
-      // 添加 key={activeOfficer.id} 让每次切换警员都能重新触发入场动画
-      // duration-1000 ease-out 带来缓慢、平滑的张开动效
-      <div key={activeOfficer.id} className="h-[calc(100vh-64px)] bg-[#050505] flex relative animate-in fade-in zoom-in-95 duration-1000 ease-out overflow-hidden">
+      // 外层容器去掉了 key，背景保持静止常亮，只有初次打开时有 1.2 秒的极缓渐隐淡入
+      <div className="h-[calc(100vh-64px)] bg-[#050505] flex relative animate-in fade-in duration-[1200ms] overflow-hidden">
         
-        {/* 左右两侧的切换箭头 (只有当该部门有多于1名警员时才显示) */}
+        {/* 左右两侧的切换箭头 */}
         {activeDept.roster && activeDept.roster.length > 1 && (
           <>
             <button 
@@ -762,8 +774,8 @@ const OrganizationView = ({ setActiveTab }) => {
           </>
         )}
 
-        {/* 左侧：放大的证件照 */}
-        <div className="w-1/2 h-full relative">
+        {/* 左侧：放大的证件照 (内部包裹 key 实现独立滑动) */}
+        <div key={`img-${activeOfficer.id}`} className={`w-1/2 h-full relative animate-in fade-in ${imgAnimateClass} duration-700 ease-out`}>
           <img src={activeOfficer.img} className="w-full h-full object-cover opacity-80" alt={activeOfficer.name} />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#050505]/50 to-[#050505]"></div>
           
@@ -780,10 +792,10 @@ const OrganizationView = ({ setActiveTab }) => {
           </div>
         </div>
 
-        {/* 右侧：详细情报区 */}
-        <div className="w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative z-20">
+        {/* 右侧：详细情报区 (带轻微延迟的滑动，制造视觉层次感) */}
+        <div key={`text-${activeOfficer.id}`} className={`w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative z-20 animate-in fade-in ${textAnimateClass} duration-700 ease-out delay-100 fill-mode-both`}>
           <div className="max-w-xl mx-auto space-y-10 pb-20">
-            {/* 基础情报 (安全区) */}
+            {/* 基础情报 */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 border-b border-zinc-800 pb-2">
                 <FileText className="text-blue-500" size={20} />
@@ -807,7 +819,7 @@ const OrganizationView = ({ setActiveTab }) => {
               </div>
 
               {!isUnlocked ? (
-                // 未解锁状态的模糊诱导块
+                // 未解锁状态
                 <div 
                   onClick={() => setShowModal(true)}
                   className="relative group cursor-pointer overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900"
@@ -823,12 +835,13 @@ const OrganizationView = ({ setActiveTab }) => {
                   </div>
                 </div>
               ) : (
-                // 已解锁状态的露骨内容区
+                // 已解锁状态
                 <div className="animate-in fade-in slide-in-from-top-4 duration-700 space-y-6">
                   <div className="text-sm leading-relaxed whitespace-pre-line bg-[#1a0f14] p-6 rounded border border-pink-900/50 text-pink-100 shadow-[0_0_30px_rgba(190,24,93,0.1)]">
                     {activeOfficer.hiddenInfo}
                   </div>
-                  {/* 新增：两张私密照片并排展示栏 */}
+
+                  {/* 双图展示栏 */}
                   {(activeOfficer.hiddenImg1 || activeOfficer.hiddenImg2) && (
                     <div className="flex gap-4 w-full">
                       {activeOfficer.hiddenImg1 && (
@@ -845,7 +858,8 @@ const OrganizationView = ({ setActiveTab }) => {
                       )}
                     </div>
                   )}
-                  {/* 跳转 N.F 平台的诱导按钮 */}
+                  
+                  {/* 跳转按钮 */}
                   <button 
                     onClick={() => setActiveTab('nf-platform')}
                     className="w-full py-4 bg-gradient-to-r from-pink-700 to-rose-600 text-white font-black tracking-widest uppercase hover:scale-[1.02] transition-transform shadow-lg shadow-pink-900/50 flex justify-center items-center gap-2"
@@ -1009,14 +1023,11 @@ const OrganizationView = ({ setActiveTab }) => {
                     onClick={() => openOfficerDetail(officer)}
                     className="bg-white border-2 border-slate-100 hover:border-[#003366] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex group rounded-r-lg overflow-hidden relative"
                   >
-                    {/* 卡片左侧：照片 */}
                     <div className="w-24 h-32 bg-slate-200 shrink-0 overflow-hidden relative">
                       <img src={officer.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
                       <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                     </div>
-                    {/* 卡片右侧：别致的信息排版 */}
                     <div className="p-4 flex flex-col justify-center relative flex-1">
-                      {/* 背景装饰编号 */}
                       <span className="absolute top-1 right-2 text-4xl font-black italic text-slate-50 select-none -z-0">
                         {officer.id.substring(0,4).toUpperCase()}
                       </span>
