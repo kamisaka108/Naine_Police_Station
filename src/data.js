@@ -62,8 +62,10 @@ export const departments = [
     role: '交通管理、事故处理、交通秩序维护',
     feature: '设有交通指挥中心，白钾分队负责机动指挥与违章取缔。',
     uniform: '[此处填入普通交通女警与白钾分队的紧身制服详细设定...]',
-    icon: 'Car' // 对应 Lucide 图标
+    icon: 'Car', // 对应 Lucide 图标
+    roster: [] // 暂时为空
   },
+
   {
     id: 'patrol',
     name: '地域課',
@@ -73,8 +75,33 @@ export const departments = [
     role: '日常巡逻、社区警务、突发事件快速反应',
     feature: '对外巡逻由实习或新人女警担任，正式女警不参与日常街道巡逻。',
     uniform: '[此处填入实习女警与正式巡查女警的超短裙及内衣设定...]',
-    icon: 'Shield'
+    icon: 'Shield',
+    roster: [
+      {
+        id: 'haru_01',
+        name: '星见 春',
+        rank: '巡查',
+        role: '新人巡查女警',
+        age: 19,
+        size: 'T159 / B92(F) / W68 / H99',
+        img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600',
+        basicInfo: '面容娇俏可爱，眼神坚定又充满朝气。粉色双马尾的发型搭配可爱的发圈。\n\n非常喜欢黏着前辈佐藤遥香，是大家的开心果。',
+        hiddenInfo: '[此处填入星见春的敏感带开发、N.F平台表现、以及过往低俗经历等深层情报...]'
+      },
+      {
+        id: 'haruka_01',
+        name: '佐藤 遥香',
+        rank: '巡査部長',
+        role: '地域课巡查三部',
+        age: 24,
+        size: 'T178 / B112(J) / W68 / H102',
+        img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600',
+        basicInfo: '能力出众的巡查部长，无论是维护秩序、捉拿犯人还是负责指导新人都得心应手，远超年龄的成熟和稳重。在警局内部拥有极高的威望。',
+        hiddenInfo: '[此处填入佐藤遥香的深层情报...]'
+      }
+    ]
   },
+
   {
     id: 'investigation',
     name: '捜査課',
@@ -86,6 +113,7 @@ export const departments = [
     uniform: '[此处填入搜查官冷艳黑西装与铅笔裙的服装要求...]',
     icon: 'Search'
   },
+
   {
     id: 'criminal',
     name: '刑事課',
@@ -95,8 +123,22 @@ export const departments = [
     role: '一般刑事案件调查、取证、审讯',
     feature: '普遍年龄在30以上的成熟女警组成。',
     uniform: '[此处填入深蓝长款西装外套等服装要求...]',
-    icon: 'Briefcase'
+    icon: 'Briefcase',
+    roster: [
+      {
+        id: 'rinko_01',
+        name: '风间 凛子',
+        rank: '警部',
+        role: '刑事课警部',
+        age: 33,
+        size: 'T167 / B90(E) / W70 / H88',
+        img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600',
+        basicInfo: '短发利落有型，工作雷厉风行，尤其擅长审讯和心理分析，直觉敏锐心理强大下手从不手软，面对大案难案有充分的实战经验。',
+        hiddenInfo: '[此处填入风间凛子的极端私生活、贫民窟兼职、以及极其强烈的反差设定...]'
+      }
+    ]
   },
+  
   {
     id: 'cyber',
     name: '網絡安全課',
