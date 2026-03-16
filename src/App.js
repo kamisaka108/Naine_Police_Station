@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./style.css";
+import "./styles.css";
 import { navItems, slides, cast, nfTags, nfHotLives, nfFixedFeeds, departments } from './data';
 import {
   Shield,Users,Lock,Search,ChevronRight,ChevronLeft,ChevronDown,FileText,
