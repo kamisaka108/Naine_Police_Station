@@ -687,11 +687,11 @@ const DetentionView = () => (
 );
 
 // ==========================================
-// 组织案内视图 (自带动画引擎，保证100%丝滑)
+// 组织案内视图 (全局 CSS 动画版，绝对生效)
 // ==========================================
 const OrganizationView = ({ setActiveTab }) => {
   const [activeDept, setActiveDept] = useState(departments[0]);
-  const [viewMode, setViewMode] = useState('dept'); // 'dept', 'list', 'detail'
+  const [viewMode, setViewMode] = useState('dept'); 
   const [activeOfficer, setActiveOfficer] = useState(null);
   
   const [unlockedProfiles, setUnlockedProfiles] = useState(new Set());
@@ -721,7 +721,7 @@ const OrganizationView = ({ setActiveTab }) => {
 
   const handlePrevOfficer = () => {
     if (!activeDept.roster) return;
-    setSlideDirection('left'); // 向左滑动
+    setSlideDirection('left');
     const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
     const prevIndex = currentIndex === 0 ? activeDept.roster.length - 1 : currentIndex - 1;
     setActiveOfficer(activeDept.roster[prevIndex]);
@@ -729,49 +729,22 @@ const OrganizationView = ({ setActiveTab }) => {
 
   const handleNextOfficer = () => {
     if (!activeDept.roster) return;
-    setSlideDirection('right'); // 向右滑动
+    setSlideDirection('right');
     const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
     const nextIndex = currentIndex === activeDept.roster.length - 1 ? 0 : currentIndex + 1;
     setActiveOfficer(activeDept.roster[nextIndex]);
   };
 
-  // --- 手写 CSS 动画引擎 (无需任何插件即可生效) ---
-  const customAnimations = `
-    @keyframes smoothFadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes slideUpSmooth {
-      from { opacity: 0; transform: translateY(40px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes slideFromRight {
-      from { opacity: 0; transform: translateX(60px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes slideFromLeft {
-      from { opacity: 0; transform: translateX(-60px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    
-    .anim-bg { animation: smoothFadeIn 1s ease-out forwards; }
-    .anim-up { animation: slideUpSmooth 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    .anim-right { animation: slideFromRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    .anim-left { animation: slideFromLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    .anim-delay-100 { animation-delay: 150ms; opacity: 0; }
-  `;
-
   if (viewMode === 'detail' && activeOfficer) {
     const isUnlocked = unlockedProfiles.has(activeOfficer.id);
     
-    // 动态分配动画类名
+    // 根据滑动方向，自动赋予我们在 styles.css 里写好的类名
     const contentAnimateClass = slideDirection === 'right' ? 'anim-right' 
                               : slideDirection === 'left' ? 'anim-left' 
                               : 'anim-up';
 
     return (
       <div className="h-[calc(100vh-64px)] bg-[#050505] flex relative overflow-hidden anim-bg">
-        <style>{customAnimations}</style>
         
         {/* 左右切换箭头 */}
         {activeDept.roster && activeDept.roster.length > 1 && (
@@ -809,7 +782,7 @@ const OrganizationView = ({ setActiveTab }) => {
           </div>
         </div>
 
-        {/* 右侧情报区 (增加 anim-delay-100 让文字比图片晚零点几秒出来，更有层次感) */}
+        {/* 右侧情报区 */}
         <div key={`text-${activeOfficer.id}`} className={`w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative z-20 ${contentAnimateClass} anim-delay-100`}>
           <div className="max-w-xl mx-auto space-y-10 pb-20">
             {/* 基础情报 */}
@@ -920,11 +893,9 @@ const OrganizationView = ({ setActiveTab }) => {
     );
   }
 
-  // 常规视图 (带简单的 fadeIn 动画)
+  // 常规视图
   return (
     <div className="flex h-[calc(100vh-64px)] bg-slate-50 text-slate-800">
-      <style>{customAnimations}</style>
-      {/* 左侧部门导航栏 */}
       <div className="w-1/4 bg-white border-r border-slate-200 overflow-y-auto">
         <div className="p-6 bg-[#003366] text-white">
           <h2 className="text-xl font-bold tracking-widest">組織案内</h2>
@@ -951,7 +922,6 @@ const OrganizationView = ({ setActiveTab }) => {
         </nav>
       </div>
 
-      {/* 右侧内容区 */}
       <div className="flex-1 p-8 overflow-y-auto anim-bg">
         {viewMode === 'dept' ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 anim-up">
