@@ -22,8 +22,8 @@
   to { opacity: 1; transform: translateX(0); }
 }
 
-.anim-bg { animation: smoothFadeIn 0.8s ease-out forwards; }
+.anim-bg { animation: smoothFadeIn 1s ease-out forwards; }
 .anim-up { animation: slideUpSmooth 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 .anim-right { animation: slideFromRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 .anim-left { animation: slideFromLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-.anim-delay-100 { animation-delay: 150ms; }
+.anim-delay-100 { animation-delay: 150ms; opacity: 0; }
