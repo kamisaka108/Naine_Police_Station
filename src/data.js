@@ -49,3 +49,74 @@ export const nfFixedFeeds = [
   { id: 'FIX-05', location: '4F 警備課・詰所', target: '警備主任', viewers: '740', heat: 450 },
   { id: 'FIX-06', location: '女子寮・共同浴場入口', target: 'XXXX', viewers: '5,621', heat: 2480 },
 ];
+
+// src/data.js (追加在文件最下方)
+// 部门数据架构
+export const departments = [
+  {
+    id: 'traffic',
+    name: '交通課',
+    fullName: '警务部 - 交通课',
+    location: '一楼',
+    staff: 15,
+    role: '交通管理、事故处理、交通秩序维护',
+    feature: '设有交通指挥中心，白钾分队负责机动指挥与违章取缔。',
+    uniform: '[此处填入普通交通女警与白钾分队的紧身制服详细设定...]',
+    icon: 'Car' // 对应 Lucide 图标
+  },
+  {
+    id: 'patrol',
+    name: '地域課',
+    fullName: '警备部 - 地域课',
+    location: '二楼',
+    staff: 20,
+    role: '日常巡逻、社区警务、突发事件快速反应',
+    feature: '对外巡逻由实习或新人女警担任，正式女警不参与日常街道巡逻。',
+    uniform: '[此处填入实习女警与正式巡查女警的超短裙及内衣设定...]',
+    icon: 'Shield'
+  },
+  {
+    id: 'investigation',
+    name: '捜査課',
+    fullName: '刑事部 - 搜查课',
+    location: '四楼',
+    staff: 10,
+    role: '重大案件调查、搜查行动、情报收集',
+    feature: '办公区域戒备森严，需要额外权限才能进入。',
+    uniform: '[此处填入搜查官冷艳黑西装与铅笔裙的服装要求...]',
+    icon: 'Search'
+  },
+  {
+    id: 'criminal',
+    name: '刑事課',
+    fullName: '刑事部 - 刑事课',
+    location: '三楼',
+    staff: 15,
+    role: '一般刑事案件调查、取证、审讯',
+    feature: '普遍年龄在30以上的成熟女警组成。',
+    uniform: '[此处填入深蓝长款西装外套等服装要求...]',
+    icon: 'Briefcase'
+  },
+  {
+    id: 'cyber',
+    name: '網絡安全課',
+    fullName: '警务管理部 - 网络安全课',
+    location: '二楼',
+    staff: 10,
+    role: '网络犯罪调查、电子取证',
+    feature: '[暗线职责：此处填入关于 N.F 平台管理与孵化的相关设定...]',
+    uniform: '成员偏向闷骚宅女感，无特定制服强求。',
+    icon: 'Monitor'
+  },
+  {
+    id: 'admin',
+    name: '内務行政',
+    fullName: '内务行政管理',
+    location: '各楼层分布',
+    staff: 5,
+    role: '内部行政事务、后勤保障、对外联络',
+    feature: '主要办公区位于三楼，靠近局长办公室。',
+    uniform: '[此处填入担任前台及接待任务的相关服装设定...]',
+    icon: 'FileText'
+  }
+];
