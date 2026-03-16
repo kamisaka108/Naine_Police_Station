@@ -86,7 +86,9 @@ export const departments = [
         size: 'T159 / B92(F) / W68 / H99',
         img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600',
         basicInfo: '面容娇俏可爱，眼神坚定又充满朝气。粉色双马尾的发型搭配可爱的发圈。\n\n非常喜欢黏着前辈佐藤遥香，是大家的开心果。',
-        hiddenInfo: '[此处填入星见春的敏感带开发、N.F平台表现、以及过往低俗经历等深层情报...]'
+        hiddenInfo: '[此处填入星见春的敏感带开发、N.F平台表现、以及过往低俗经历等深层情报...]',
+        hiddenImg1: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=400', 
+        hiddenImg2: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=400'
       },
       {
         id: 'haruka_01',
@@ -97,7 +99,9 @@ export const departments = [
         size: 'T178 / B112(J) / W68 / H102',
         img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600',
         basicInfo: '能力出众的巡查部长，无论是维护秩序、捉拿犯人还是负责指导新人都得心应手，远超年龄的成熟和稳重。在警局内部拥有极高的威望。',
-        hiddenInfo: '[此处填入佐藤遥香的深层情报...]'
+        hiddenInfo: '[此处填入佐藤遥香的深层情报...]',
+        hiddenImg1: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=400', 
+        hiddenImg2: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=400'
       }
     ]
   },
@@ -133,12 +137,14 @@ export const departments = [
         age: 33,
         size: 'T167 / B90(E) / W70 / H88',
         img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600',
-        basicInfo: '短发利落有型，工作雷厉风行，尤其擅长审讯和心理分析，直觉敏锐心理强大下手从不手软，面对大案难案有充分的实战经验。',
-        hiddenInfo: '[此处填入风间凛子的极端私生活、贫民窟兼职、以及极其强烈的反差设定...]'
+        basicInfo: '短发利落有型，工作雷厉风行，尤其擅长审讯和心理分析，直觉敏锐心理强大下手从不手软，面对大案难案有充分的实战经验。。',
+        hiddenInfo: '[此处填入风间凛子的极端私生活、贫民窟兼职、以及极其强烈的反差设定...]',
+        hiddenImg1: 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=400', 
+        hiddenImg2: 'https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=400'
       }
     ]
   },
-  
+
   {
     id: 'cyber',
     name: '網絡安全課',
