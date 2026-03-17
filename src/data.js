@@ -162,7 +162,7 @@ export const cast = [
   },
   {
     name: "渡辺 舞",
-    age: 22,
+    age: 23,
     bodyStatus: '彼氏と同棲中 · 浮気中毒 · 絶頂依存症',
     rank: "巡査",
     dept: "捜査課",
@@ -212,7 +212,7 @@ export const cast = [
     secretBadges: ["便器熟女", "精液便所", "性病愛好者"],
     dispatches: 1170,
     surfaceRating: 4.1,
-    secretRating: 5.0,
+    secretRating: 4.99,
     specialty: "尋問セックス、無套中出し、性感染症患者の性行為を全面的に受け入れる ",
     services: [
       {
