@@ -80,6 +80,7 @@ export const cast = [
   {
     name: "佐藤 遥香",
     age: 24,
+    bodyStatus: '未婚の母 · 可搾乳', // <--- 加上这个专属标签
     rank: "巡査部長",
     dept: "地域課巡査三部",
     size: "T178 / B112(J) / W68 / H102",
@@ -87,9 +88,9 @@ export const cast = [
     status: "待機中",
     img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600",
     surfaceBadges: ["優秀指導員", "防犯推進"],  //警员卡片左上角标注 表世界
-    secretBadges: ["巨乳", "母乳", "中出し歓迎"],  //警员卡片左上角标注 里世界
-    dispatches: 1240,  //总计救济派遣次数 表世界
-    surfaceRating: 4.9,  //服务评价 表世界
+    secretBadges: ["巨乳", "母乳", "中出し歓迎","常時発情"],  //警员卡片左上角标注 里世界
+    dispatches: 840,  //总计救济派遣次数 表世界
+    surfaceRating: 4.85,  //服务评价 表世界
     secretRating: 5.0, // 双评分分离 里世界
     specialty: "パイズリ、授乳、騎乗位搾り",  //性技特长 里世界
     services: [
@@ -98,7 +99,7 @@ export const cast = [
         id: "s1",
         name: "胸部圧迫救済 (パイズリ)",
         duration: "20分",
-        price: 18000,
+        price: 10000,
         desc: "Jカップの巨乳で窒息寸前まで挟み込みます。",
       },
       {
@@ -112,7 +113,7 @@ export const cast = [
         id: "s3",
         name: "母乳搾精 (中出し許可)",
         duration: "60分",
-        price: 90000,
+        price: 80000,
         desc: "母乳を飲ませながらの騎乗位。危険日応相談。",
       },
     ],
@@ -124,6 +125,7 @@ export const cast = [
   {
     name: "星見 春",
     age: 19,
+    bodyStatus: '単身 · 危険日 · パパ活中',
     rank: "巡査",
     dept: "地域課",
     size: "T159 / B92(F) / W68 / H99",
@@ -131,35 +133,37 @@ export const cast = [
     status: "出動中",
     img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600",
     surfaceBadges: ["新人", "広報担当"],
-    secretBadges: ["開発中", "淫語", "野外露出"],
+    secretBadges: ["開発中", "淫語", "野外露出","生で中出し"],
     dispatches: 85,
-    surfaceRating: 4.2,
-    secretRating: 4.8,
+    surfaceRating: 4.0,
+    secretRating: 4.5,
     specialty: "フェラチオ、野外露出プレイ",
     services: [
       {
         id: "h1",
         name: "素人フェラ (口奉仕)",
         duration: "15分",
-        price: 12000,
+        price: 8000,
         desc: "不慣れですが一生懸命舐め奉仕します。",
       },
       {
         id: "h2",
         name: "青姦チャレンジ (本番)",
         duration: "40分",
-        price: 40000,
+        price: 35000,
         desc: "人気のない公園や路地裏で制服を着たまま本番。",
       },
     ],
     addons: [
       { id: "ha1", name: "制服汚れ許可 (精液)", price: 8000 },
       { id: "ha2", name: "淫語連呼・メスガキ口調", price: 3000 },
+      { id: "ha3", name: "生で中出し", price: 0 },
     ],
   },
   {
     name: "渡辺 舞",
     age: 22,
+    bodyStatus: '彼氏と同棲中 · 浮気中毒 · 絶頂依存症',
     rank: "巡査",
     dept: "捜査課",
     size: "T165 / B88(D) / W58 / H87",
@@ -167,35 +171,37 @@ export const cast = [
     status: "待機中",
     img: "https://images.unsplash.com/photo-1548142813-c348350df52b?q=80&w=600",
     surfaceBadges: ["体力優秀", "現場主義"],
-    secretBadges: ["体育会系", "乱交", "複数穴"],
-    dispatches: 320,
-    surfaceRating: 4.7,
-    secretRating: 4.9,
-    specialty: "連続騎乗位、複数人同時処理",
+    secretBadges: ["体育会系", "乱交", "複数穴","不倫に溺れる"],
+    dispatches: 106,
+    surfaceRating: 4.5,
+    secretRating: 4.8,
+    specialty: "連続騎乗位、複数同時処理、直腸内射精",
     services: [
       {
         id: "w1",
         name: "体力勝負 (連続騎乗位)",
         duration: "45分",
-        price: 30000,
+        price: 20000,
         desc: "体育会系の無尽蔵な体力で腰を振り続けます。",
       },
       {
         id: "w2",
         name: "乱交救済 (複数人同時)",
         duration: "90分",
-        price: 75000,
+        price: 50000,
         desc: "友人同士など最大3名までの同時処理に対応。",
       },
     ],
     addons: [
-      { id: "wa1", name: "アナル使用許可", price: 15000 },
+      { id: "wa1", name: "アナル使用許可", price: 10000 },
       { id: "wa2", name: "ノーパン出動", price: 5000 },
+      { id: "wa3", name: "無·套·中·出", price: 1000 },
     ],
   },
   {
     name: "風間 凛子",
     age: 33,
+    bodyStatus: '新婚 · 汚物歓迎 · 複数性病感染中 · 3回以上の流産 ',
     rank: "警部",
     dept: "刑事課",
     size: "T167 / B90(E) / W70 / H88",
@@ -203,11 +209,11 @@ export const cast = [
     status: "休憩",
     img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600",
     surfaceBadges: ["検挙率No.1", "ベテラン"],
-    secretBadges: ["肉便器", "孕み願望", "性病愛好"],
-    dispatches: 2800,
-    surfaceRating: 5.0,
+    secretBadges: ["便器熟女", "精液便所", "性病愛好者"],
+    dispatches: 1170,
+    surfaceRating: 4.1,
     secretRating: 5.0,
-    specialty: "尋問セックス、無套中出し",
+    specialty: "尋問セックス、無套中出し、性感染症患者の性行為を全面的に受け入れる ",
     services: [
       {
         id: "r1",
@@ -219,7 +225,7 @@ export const cast = [
       {
         id: "r2",
         name: "孕み救済 (無套中出し)",
-        duration: "45分",
+        duration: "60分",
         price: 120000,
         desc: "極上の名器への生ハメ。性病検査必須。",
       },
@@ -227,11 +233,13 @@ export const cast = [
     addons: [
       { id: "ra1", name: "手錠・拘束具プレイ", price: 0 },
       { id: "ra2", name: "飲尿・黄金水", price: 20000 },
+      { id: "ra3", name: "母と娘が共に仕える", price: 60000 },
     ],
   },
   {
     name: "佐野 彩香",
     age: 25,
+    bodyStatus: '婚約中 · 浮気癖',
     rank: "新米警察官",
     dept: "地域課",
     size: "T168 / B92(D) / W62 / H91",
@@ -246,21 +254,21 @@ export const cast = [
     specialty: "スーツ着用奉仕、羞恥プレイ",
     services: [
       {
-        id: "r1",
+        id: "a1",
         name: "基本救済 (手口奉仕)",
         duration: "15分",
         price: 8000,
         desc: "パトカー内での素早い処理。前戯なし。",
       },
       {
-        id: "r2",
+        id: "a2",
         name: "標準救済 (本番行為)",
         duration: "45分",
         price: 30000,
         desc: "指定場所でのフルサービス。ゴム着用必須。",
       },
       {
-        id: "r3",
+        id: "a3",
         name: "深度救済 (中出し許可)",
         duration: "60分",
         price: 60000,
@@ -268,38 +276,39 @@ export const cast = [
       },
     ],
     addons: [
-      { id: "ra1", name: "標準警察用予備制服", price: 0 },
-      { id: "ra2", name: "1時間延長する", price: 20000 },
+      { id: "aa1", name: "標準警察用予備制服", price: 0 },
+      { id: "aa2", name: "1時間延長する", price: 20000 },
     ],
   },
   {
     name: "月野 澪",
+    bodyStatus: '未亡人 · 体温異常 · 无表情 · 死体愛好',
     age: 33,
     rank: "警視",
     dept: "法医鑑定室",
     size: "T165 / B75(A) / W60 / H78",
     shift: "秘匿中",
-    status: "待機中",
+    status: "秘匿中",
     img: "https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=400",
     surfaceBadges: ["医学博士", "特任"],
     secretBadges: ["氷恋", "薬物", "人体改造"],
-    dispatches: 156,
-    surfaceRating: 4.8,
-    secretRating: 4.4,
-    specialty: "死体見立てプレイ、薬物責め",
+    dispatches: 13,
+    surfaceRating: 2.1,
+    secretRating: 4.85,
+    specialty: "死体見立てプレイ、薬物責め、死体の役を演じる",
     services: [
       {
         id: "m1",
         name: "身体検査 (メディカルプレイ)",
         duration: "45分",
-        price: 45000,
+        price: 20000,
         desc: "白衣着用。冷たい器具を使った特殊な快感。",
       },
       {
         id: "m2",
         name: "薬物強制投与 (絶頂コントロール)",
         duration: "60分",
-        price: 85000,
+        price: 105000,
         desc: "特殊な媚薬を使用し、強制的に絶頂に導きます。",
       },
     ],
