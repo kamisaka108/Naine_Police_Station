@@ -238,7 +238,7 @@ export const cast = [
     shift: "18:00 - LAST",
     status: "休憩",
     img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600",
-    surfaceBadges: ["法務専門', '厳格"],
+    surfaceBadges: ["法務専門", "厳格"],
     secretBadges: ['ドM', '痴漢願望', '拘束'],
     dispatches: 13,
     surfaceRating: 4.0,
