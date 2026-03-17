@@ -23,13 +23,27 @@ export const slides = [
 ];
 
 export const cast = [
-  { name: '佐藤 遥香', age: 24, rank: '巡査部長', dept: '地域課巡査三部', size: 'T178 / B112(J) / W68 / H102', shift: '10:00 - LAST', status: '待機中', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600', badges: ['エリート'] },
-  { name: '星見 春', age: 19, rank: '巡査', dept: '地域課', size: 'T159 / B92(F) / W68 / H99', shift: '12:00 - 22:00', status: '出動中', img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600', badges: ['新人'] },
-  { name: '渡辺 舞', age: 22, rank: '巡査', dept: '捜査課', size: 'T165 / B88(D) / W58 / H87', shift: '14:00 - LAST', status: '待機中', img: 'https://images.unsplash.com/photo-1548142813-c348350df52b?q=80&w=600', badges: [] },
-  { name: '佐野 彩香', age: 25, rank: '新米警察官', dept: '地域課', size: 'T168 / B92(D) / W62 / H91', shift: '18:00 - LAST', status: '待機中', img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600', badges: ['New!!'] },
-  { name: '風間 凛子', age: 33, rank: '警部', dept: '刑事課', size: 'T167 / B90(E) / W70 / H88', shift: '勤務終了', status: '休憩', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600', badges: ['熟女'] },
-  { name: '月野 澪', age: 33, rank: '警視', dept: '法医鑑定室', size: 'T165 / B75(A) / W60 / H78', shift: '秘匿中', status: '待機中', img: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=400', badges: ['病態美'] },
-  { name: '愛川 藍子', age: 21, rank: '巡査', dept: '地域課', size: 'T162 / B86(C) / W58 / H85', shift: '10:00 - 18:00', status: '待機中', img: 'https://i.postimg.cc/vT5BWLRz/Image-1773465829327.jpg', badges: ['写真あり'] },
+  { name: '佐藤 遥香', age: 24, rank: '巡査部長', dept: '地域課巡査三部', size: 'T178 / B112(J) / W68 / H102', shift: '10:00 - LAST', status: '待機中', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=600', 
+    surfaceBadges: ['優秀指導員', '防犯推進'], secretBadges: ['巨乳', '母乳', '中出し歓迎'],
+    dispatches: 1240, rating: 4.9, specialty: 'パイズリ、授乳、騎乗位搾り' },
+  { name: '星見 春', age: 19, rank: '巡査', dept: '地域課', size: 'T159 / B92(F) / W68 / H99', shift: '12:00 - 22:00', status: '出動中', img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=600', 
+    surfaceBadges: ['新人', '広報担当'], secretBadges: ['開発中', '淫語', '野外露出'],
+    dispatches: 85, rating: 4.6, specialty: 'フェラチオ、野外露出プレイ' },
+  { name: '渡辺 舞', age: 22, rank: '巡査', dept: '捜査課', size: 'T165 / B88(D) / W58 / H87', shift: '14:00 - LAST', status: '待機中', img: 'https://images.unsplash.com/photo-1548142813-c348350df52b?q=80&w=600', 
+    surfaceBadges: ['体力優秀', '現場主義'], secretBadges: ['体育会系', '乱交', '複数穴'],
+    dispatches: 320, rating: 4.7, specialty: '連続騎乗位、複数人同時処理' },
+  { name: '佐野 彩香', age: 25, rank: '新米警察官', dept: '地域課', size: 'T168 / B92(D) / W62 / H91', shift: '18:00 - LAST', status: '待機中', img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=600', 
+    surfaceBadges: ['法務専門', '厳格'], secretBadges: ['ドM', '痴漢願望', '拘束'],
+    dispatches: 45, rating: 4.3, specialty: 'スーツ着用奉仕、羞恥プレイ' },
+  { name: '風間 凛子', age: 33, rank: '警部', dept: '刑事課', size: 'T167 / B90(E) / W70 / H88', shift: '勤務終了', status: '休憩', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600', 
+    surfaceBadges: ['検挙率No.1', 'ベテラン'], secretBadges: ['肉便器', '孕み願望', '性病愛好'],
+    dispatches: 2800, rating: 5.0, specialty: '尋問セックス、無套中出し' },
+  { name: '月野 澪', age: 33, rank: '警視', dept: '法医鑑定室', size: 'T165 / B75(A) / W60 / H78', shift: '秘匿中', status: '待機中', img: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=400', 
+    surfaceBadges: ['医学博士', '特任'], secretBadges: ['氷恋', '薬物', '人体改造'],
+    dispatches: 156, rating: 4.8, specialty: '死体見立てプレイ、薬物責め' },
+  { name: '愛川 藍子', age: 21, rank: '巡査', dept: '地域課', size: 'T162 / B86(C) / W58 / H85', shift: '10:00 - 18:00', status: '待機中', img: 'https://i.postimg.cc/vT5BWLRz/Image-1773465829327.jpg', 
+    surfaceBadges: ['一日署長', '親善大使'], secretBadges: ['露出狂', '盗撮歓迎', 'パンチラ'],
+    dispatches: 210, rating: 4.5, specialty: '公衆トイレ奉仕、盗撮シチュ' },
 ];
 
 export const nfTags = ["#交通課", "#巡査課", "#刑事課", "#生活安全課", "#警備課", "#地域課", "#更衣室", "#尋問", "#密着", "#新米", "#熟女", "#公共エリア", "#トイレ"];
