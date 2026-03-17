@@ -1,16 +1,59 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
-import { navItems, slides, cast, nfTags, nfHotLives, nfFixedFeeds, departments, dispatchData } from './data';
 import {
-  Shield,Users,Lock,Search,ChevronRight,ChevronLeft,ChevronDown,FileText,
-  Camera,BookOpen,Info,Eye,Radio,Video,Award,Zap,Play,Pause,TrendingUp,Clock,
-  PhoneCall,Heart,Star,List,Flame,Wifi,Layers,User,LogOut,Gift,Bell,Bookmark,Layout,MoreHorizontal,
-  Home,Send,MessageCircle,Monitor,
+  navItems,
+  slides,
+  cast,
+  nfTags,
+  nfHotLives,
+  nfFixedFeeds,
+  departments,
+  dispatchData,
+} from "./data";
+import {
+  Shield,
+  Users,
+  Lock,
+  Search,
+  ChevronRight,
+  ChevronLeft,
+  ChevronDown,
+  FileText,
+  Camera,
+  BookOpen,
+  Info,
+  Eye,
+  Radio,
+  Video,
+  Award,
+  Zap,
+  Play,
+  Pause,
+  TrendingUp,
+  Clock,
+  PhoneCall,
+  Heart,
+  Star,
+  List,
+  Flame,
+  Wifi,
+  Layers,
+  User,
+  LogOut,
+  Gift,
+  Bell,
+  Bookmark,
+  Layout,
+  MoreHorizontal,
+  Home,
+  Send,
+  MessageCircle,
+  Monitor,
   X,
-  Car,        // 新增：用于交通课
+  Car, // 新增：用于交通课
   Briefcase, // 新增：用于刑事课
   Unlock,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 
 // ==========================================
@@ -25,24 +68,24 @@ const App = () => {
     return <NFPlatformView onBackToPortal={() => setActiveTab("home")} />;
   }
 
-// 渲染政务网主视图
-const renderContent = () => {
-  switch (activeTab) {
-    case "home":
-      return <HomeView setActiveTab={setActiveTab} />;
-    case "dispatch":
-      return <DispatchView setSelectedOfficer={setSelectedOfficer} />;
-    case "depts":
-      // ▼ 重点看这里：换成我们刚刚建好的“展柜” ▼
-      return <OrganizationView setActiveTab={setActiveTab} />; 
-    case "publications":
-      return <PublicationsView />;
-    case "detention":
-      return <DetentionView />;
-    default:
-      return <HomeView setActiveTab={setActiveTab} />;
-  }
-};
+  // 渲染政务网主视图
+  const renderContent = () => {
+    switch (activeTab) {
+      case "home":
+        return <HomeView setActiveTab={setActiveTab} />;
+      case "dispatch":
+        return <DispatchView setSelectedOfficer={setSelectedOfficer} />;
+      case "depts":
+        // ▼ 重点看这里：换成我们刚刚建好的“展柜” ▼
+        return <OrganizationView setActiveTab={setActiveTab} />;
+      case "publications":
+        return <PublicationsView />;
+      case "detention":
+        return <DetentionView />;
+      default:
+        return <HomeView setActiveTab={setActiveTab} />;
+    }
+  };
 
   const isParentActive = (item) => {
     if (item.id === activeTab) return true;
@@ -395,24 +438,28 @@ const HomeView = ({ setActiveTab }) => {
 };
 
 // ==========================================
-// 紧急救济派单视图 (体制内情色·肉色禁忌版)
+// 紧急救济派单视图 (终极细节打磨版：专属菜单 + 防遮挡)
 // ==========================================
 const DispatchView = ({ setSelectedOfficer }) => {
-  const [clickCount, setClickCount] = useState(0); 
-  const [isSecretMode, setIsSecretMode] = useState(false); 
-  const [showVerifyModal, setShowVerifyModal] = useState(false); 
-  const [idInput, setIdInput] = useState(''); 
-  const [verifyError, setVerifyError] = useState('');
-  
-  const [callingOfficer, setCallingOfficer] = useState(null); 
-  const [isProcessing, setIsProcessing] = useState(false); 
-  const [showSuccessModal, setShowSuccessModal] = useState(false); 
-  const [hasPendingDispatch, setHasPendingDispatch] = useState(false); 
+  const [clickCount, setClickCount] = useState(0);
+  const [isSecretMode, setIsSecretMode] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [idInput, setIdInput] = useState("");
+  const [verifyError, setVerifyError] = useState("");
 
-  const [selectedService, setSelectedService] = useState(dispatchData.secret.services[0]);
+  const [callingOfficer, setCallingOfficer] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [hasPendingDispatch, setHasPendingDispatch] = useState(false);
+
+  // 动态读取当前女警的专属菜单
+  const [selectedService, setSelectedService] = useState(null);
   const [selectedAddons, setSelectedAddons] = useState([]);
 
-  const slots = Array.from({ length: 10 }, (_, i) => cast[i] || { isPlaceholder: true });
+  const slots = Array.from(
+    { length: 10 },
+    (_, i) => cast[i] || { isPlaceholder: true }
+  );
 
   const handleSecretTrigger = () => {
     if (isSecretMode) return;
@@ -429,7 +476,7 @@ const DispatchView = ({ setSelectedOfficer }) => {
       setShowVerifyModal(false);
       setIsSecretMode(true);
     } else {
-      setVerifyError('認証失敗: マイナンバー(12桁の数字)を確認してください。');
+      setVerifyError("認証失敗: マイナンバー(12桁の数字)を確認してください。");
     }
   };
 
@@ -437,10 +484,18 @@ const DispatchView = ({ setSelectedOfficer }) => {
     setIsProcessing(true);
     setTimeout(() => {
       setIsProcessing(false);
-      setCallingOfficer(null); 
-      setShowSuccessModal(true); 
-      setHasPendingDispatch(true); 
+      setCallingOfficer(null);
+      setShowSuccessModal(true);
+      setHasPendingDispatch(true);
     }, 3500);
+  };
+
+  // 打开弹窗并初始化专属菜单
+  const openForm = (off) => {
+    setCallingOfficer(off);
+    const services = off.services || dispatchData.secret.services;
+    setSelectedService(services[0]);
+    setSelectedAddons([]);
   };
 
   const closeForm = () => {
@@ -449,26 +504,43 @@ const DispatchView = ({ setSelectedOfficer }) => {
   };
 
   const toggleAddon = (addon) => {
-    if (selectedAddons.find(a => a.id === addon.id)) {
-      setSelectedAddons(selectedAddons.filter(a => a.id !== addon.id));
+    if (selectedAddons.find((a) => a.id === addon.id)) {
+      setSelectedAddons(selectedAddons.filter((a) => a.id !== addon.id));
     } else {
       setSelectedAddons([...selectedAddons, addon]);
     }
   };
 
   const calculateTotal = () => {
-    return selectedService.price + selectedAddons.reduce((sum, a) => sum + a.price, 0);
+    if (!selectedService) return 0;
+    return (
+      selectedService.price +
+      selectedAddons.reduce((sum, a) => sum + a.price, 0)
+    );
   };
 
-// 女警们当前红绿灯状态展示
   const getStatusDisplay = (status, shift) => {
-    if (shift === "勤務終了") return { color: 'bg-amber-400', text: isSecretMode ? '🟡 ザーメン処理・補給中' : '🟡 返回警局補給中', disable: true };
-    if (status === '待機中') return { color: 'bg-emerald-500', text: isSecretMode ? '🟢 待機中 / 奉仕可能' : '🟢 待機中 / 可呼叫', disable: false };
-    if (status === '出動中') return { color: 'bg-rose-500', text: isSecretMode ? '🔴 接客中 / 中出し奉仕中' : '🔴 正在執行救濟任務', disable: true };
-    return { color: 'bg-slate-400', text: '⚪ 状態不明', disable: true };
+    if (shift === "勤務終了")
+      return {
+        color: "bg-amber-400",
+        text: isSecretMode ? "🟡 ザーメン処理・補給中" : "🟡 返回警局補給中",
+        disable: true,
+      };
+    if (status === "待機中")
+      return {
+        color: "bg-emerald-500",
+        text: isSecretMode ? "🟢 待機中 / 奉仕可能" : "🟢 待機中 / 可呼叫",
+        disable: false,
+      };
+    if (status === "出動中")
+      return {
+        color: "bg-rose-500",
+        text: isSecretMode ? "🔴 接客中 / 中出し奉仕中" : "🔴 正在執行救濟任務",
+        disable: true,
+      };
+    return { color: "bg-slate-400", text: "⚪ 状態不明", disable: true };
   };
 
-  // 生成完美支持半星的评分组件
   const renderStars = (rating, isSecret) => {
     const fullStars = Math.floor(rating);
     const hasHalf = rating % 1 !== 0;
@@ -476,17 +548,33 @@ const DispatchView = ({ setSelectedOfficer }) => {
       <div className="flex items-center gap-0.5">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="relative w-3 h-3">
-            {/* 背景底星 */}
-            <Star size={12} className={isSecret ? "text-rose-200" : "text-slate-200"} />
-            {/* 填充亮星 */}
+            <Star
+              size={12}
+              className={isSecret ? "text-rose-200" : "text-slate-200"}
+            />
             {(i < fullStars || (i === fullStars && hasHalf)) && (
-              <div className={`absolute inset-0 overflow-hidden ${i === fullStars && hasHalf ? 'w-1/2' : 'w-full'}`}>
-                <Star size={12} className={isSecret ? "text-rose-500 fill-rose-500" : "text-amber-400 fill-amber-400"} />
+              <div
+                className={`absolute inset-0 overflow-hidden ${
+                  i === fullStars && hasHalf ? "w-1/2" : "w-full"
+                }`}
+              >
+                <Star
+                  size={12}
+                  className={
+                    isSecret
+                      ? "text-rose-500 fill-rose-500"
+                      : "text-amber-400 fill-amber-400"
+                  }
+                />
               </div>
             )}
           </div>
         ))}
-        <span className={`text-[10px] font-mono ml-1 font-bold ${isSecret ? 'text-rose-700' : 'text-slate-500'}`}>
+        <span
+          className={`text-[10px] font-mono ml-1 font-bold ${
+            isSecret ? "text-rose-700" : "text-slate-500"
+          }`}
+        >
           {Number(rating).toFixed(1)}
         </span>
       </div>
@@ -495,58 +583,109 @@ const DispatchView = ({ setSelectedOfficer }) => {
 
   return (
     <>
-      {/* 极致诱惑的背景：不再是全黑，而是带有一丝粉红/肉色的病态白 */}
       {isSecretMode && (
-        <div className="fixed inset-0 bg-[#fff5f8] transition-colors duration-1000" style={{ zIndex: 0 }} />
+        <div
+          className="fixed inset-0 bg-[#fff5f8] transition-colors duration-1000"
+          style={{ zIndex: 0 }}
+        />
       )}
 
-      <div className={`relative z-10 py-6 animate-in fade-in duration-1000 min-h-screen transition-colors duration-700 ${isSecretMode ? 'text-rose-950' : 'text-[#333]'}`}>
-        
-        {/* 1. 身份验证弹窗 (公文风格的变态变异) */}
+      <div
+        className={`relative z-10 py-6 animate-in fade-in duration-1000 min-h-screen transition-colors duration-700 ${
+          isSecretMode ? "text-rose-950" : "text-[#333]"
+        }`}
+      >
+        {/* 1. 身份验证弹窗 */}
         {showVerifyModal && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#fff5f8]/90 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#fff5f8]/90 backdrop-blur-sm">
             <div className="bg-white border-2 border-rose-800 p-8 w-full max-w-md shadow-[0_0_50px_rgba(225,29,72,0.15)] animate-in zoom-in-95 font-serif">
               <div className="flex items-center justify-center gap-3 mb-6 text-rose-800 border-b border-rose-200 pb-4">
                 <Lock size={24} className="animate-pulse" />
-                <h3 className="text-xl font-black tracking-widest">特例奉仕・アクセス認証</h3>
+                <h3 className="text-xl font-black tracking-widest">
+                  特例奉仕・アクセス認証
+                </h3>
               </div>
               <p className="text-xs text-rose-900/70 mb-4 leading-relaxed text-center font-bold">
-                【機密】これより先は特例性欲処理統制局の管轄となります。<br/>
+                【機密】これより先は特例性欲処理統制局の管轄となります。
+                <br />
                 市民ID（マイナンバー12桁）を入力してください。
               </p>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 maxLength={12}
                 placeholder="0000 0000 0000"
                 value={idInput}
-                onChange={(e) => {setIdInput(e.target.value); setVerifyError('');}}
+                onChange={(e) => {
+                  setIdInput(e.target.value);
+                  setVerifyError("");
+                }}
                 className="w-full bg-rose-50 border-2 border-rose-200 text-rose-900 font-black text-center text-xl tracking-[0.5em] py-4 mb-2 focus:outline-none focus:border-rose-500"
               />
-              {verifyError && <p className="text-[10px] text-rose-600 mb-4 text-center font-bold">{verifyError}</p>}
+              {verifyError && (
+                <p className="text-[10px] text-rose-600 mb-4 text-center font-bold">
+                  {verifyError}
+                </p>
+              )}
               <div className="flex gap-4 mt-6">
-                <button onClick={() => setShowVerifyModal(false)} className="flex-1 py-3 bg-white border border-rose-200 text-rose-400 font-bold hover:bg-rose-50">破棄</button>
-                <button onClick={handleVerify} className="flex-1 py-3 bg-rose-800 text-white font-black hover:bg-rose-900 shadow-lg active:scale-95 transition-all">認証・接続</button>
+                <button
+                  onClick={() => setShowVerifyModal(false)}
+                  className="flex-1 py-3 bg-white border border-rose-200 text-rose-400 font-bold hover:bg-rose-50"
+                >
+                  破棄
+                </button>
+                <button
+                  onClick={handleVerify}
+                  className="flex-1 py-3 bg-rose-800 text-white font-black hover:bg-rose-900 shadow-lg active:scale-95 transition-all"
+                >
+                  認証・接続
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* 2. 派单成功提示弹窗 (公文风格) */}
+        {/* 2. 派单成功提示弹窗 */}
         {showSuccessModal && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in">
-            <div className={`w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 border text-center ${isSecretMode ? 'bg-white border-2 border-rose-800' : 'bg-white border-blue-200'}`}>
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${isSecretMode ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in">
+            <div
+              className={`w-full max-w-md p-8 shadow-2xl animate-in zoom-in-95 border text-center ${
+                isSecretMode
+                  ? "bg-white border-2 border-rose-800"
+                  : "bg-white border-blue-200"
+              }`}
+            >
+              <div
+                className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${
+                  isSecretMode
+                    ? "bg-rose-100 text-rose-600"
+                    : "bg-emerald-100 text-emerald-600"
+                }`}
+              >
                 <CheckCircle size={32} />
               </div>
-              <h3 className={`text-2xl font-black mb-4 ${isSecretMode ? 'text-rose-900' : 'text-[#003366]'}`}>要請受理完了</h3>
-              <p className={`text-sm leading-relaxed mb-8 font-bold ${isSecretMode ? 'text-rose-900/60' : 'text-slate-500'}`}>
-                {isSecretMode 
+              <h3
+                className={`text-2xl font-black mb-4 ${
+                  isSecretMode ? "text-rose-900" : "text-[#003366]"
+                }`}
+              >
+                要請受理完了
+              </h3>
+              <p
+                className={`text-sm leading-relaxed mb-8 font-bold ${
+                  isSecretMode ? "text-rose-900/60" : "text-slate-500"
+                }`}
+              >
+                {isSecretMode
                   ? "対象の雌犬（警察官）への派遣要請が確定しました。\n現在の奉仕業務が完了するまで、追加の要請はロックされます。\n準備をしてお待ちください。"
                   : "警局目前已收到您的派遣救济请求。\n在当前派遣业务完成前，暂时不可进行二次请求提交。\n请您耐心等待警员抵达。"}
               </p>
-              <button 
+              <button
                 onClick={() => setShowSuccessModal(false)}
-                className={`w-full py-3 font-bold transition-colors active:scale-95 ${isSecretMode ? 'bg-rose-800 hover:bg-rose-900 text-white' : 'bg-[#003366] hover:bg-[#002244] text-white'}`}
+                className={`w-full py-3 font-bold transition-colors active:scale-95 ${
+                  isSecretMode
+                    ? "bg-rose-800 hover:bg-rose-900 text-white"
+                    : "bg-[#003366] hover:bg-[#002244] text-white"
+                }`}
               >
                 確認 (閉じる)
               </button>
@@ -554,33 +693,96 @@ const DispatchView = ({ setSelectedOfficer }) => {
           </div>
         )}
 
-        {/* 3. 呼叫表单弹窗 */}
+        {/* 3. 呼叫表单弹窗 (加入防遮挡的高度限制与内部滚动) */}
         {callingOfficer && (
-          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/40 backdrop-blur-md animate-in fade-in p-4">
-            <div className={`w-full max-w-2xl overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 ${isSecretMode ? 'bg-white border-2 border-rose-200 text-rose-950' : 'bg-white border border-blue-100 text-[#333]'}`}>
-              <div className={`p-6 flex items-center gap-6 border-b ${isSecretMode ? 'bg-rose-50 border-rose-100' : 'bg-blue-50/50 border-blue-50'}`}>
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in p-4">
+            {/* 核心修改：max-h-[85vh] 限制高度，flex-col 允许内部滚动 */}
+            <div
+              className={`w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom-8 rounded-lg ${
+                isSecretMode
+                  ? "bg-white border-2 border-rose-200 text-rose-950"
+                  : "bg-white border border-blue-100 text-[#333]"
+              }`}
+            >
+              {/* 头部固定不动 */}
+              <div
+                className={`p-6 flex-shrink-0 flex items-center gap-6 border-b ${
+                  isSecretMode
+                    ? "bg-rose-50 border-rose-100"
+                    : "bg-blue-50/50 border-blue-50"
+                }`}
+              >
                 <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-current shrink-0">
-                  <img src={callingOfficer.img} className="w-full h-full object-cover" alt={callingOfficer.name} />
+                  <img
+                    src={callingOfficer.img}
+                    className="w-full h-full object-cover"
+                    alt={callingOfficer.name}
+                  />
                 </div>
                 <div>
-                  <h3 className={`text-2xl font-black ${isSecretMode ? 'text-rose-800' : 'text-[#003366]'}`}>
-                    {isSecretMode ? '指名対象: ' : '要請対象: '}{callingOfficer.name}
+                  <h3
+                    className={`text-2xl font-black ${
+                      isSecretMode ? "text-rose-800" : "text-[#003366]"
+                    }`}
+                  >
+                    {isSecretMode ? "指名対象: " : "要請対象: "}
+                    {callingOfficer.name}
                   </h3>
-                  <p className={`text-sm font-bold ${isSecretMode ? 'text-rose-400' : 'opacity-70'}`}>
-                    {isSecretMode ? `${callingOfficer.age}歳 | ${callingOfficer.size}` : `${callingOfficer.rank} | ${callingOfficer.dept}`}
+                  <p
+                    className={`text-sm font-bold ${
+                      isSecretMode ? "text-rose-400" : "opacity-70"
+                    }`}
+                  >
+                    {isSecretMode
+                      ? `${callingOfficer.age}歳 | ${callingOfficer.size}`
+                      : `${callingOfficer.rank} | ${callingOfficer.dept}`}
                   </p>
                 </div>
-                {!isProcessing && <button onClick={closeForm} className="ml-auto opacity-50 hover:opacity-100"><X size={24} /></button>}
+                {!isProcessing && (
+                  <button
+                    onClick={closeForm}
+                    className="ml-auto opacity-50 hover:opacity-100"
+                  >
+                    <X size={24} />
+                  </button>
+                )}
               </div>
 
-              <div className="p-8">
+              {/* 表单内容区 (核心修改：overflow-y-auto 允许内部滚动) */}
+              <div className="p-8 overflow-y-auto">
                 {isProcessing ? (
                   <div className="py-12 flex flex-col items-center justify-center font-mono space-y-6">
-                    <div className={`w-16 h-16 border-t-4 rounded-full animate-spin ${isSecretMode ? 'border-rose-600' : 'border-[#003366]'}`}></div>
-                    <div className={`text-sm font-black tracking-widest ${isSecretMode ? 'text-rose-700' : 'text-[#003366]'}`}>
-                      <p className="animate-pulse mb-2">{isSecretMode ? '> 特例奉仕プロトコルを確認中...' : '> 通報内容を精査中...'}</p>
-                      <p className="animate-pulse delay-1000 mb-2" style={{animationDelay: '1s'}}>{isSecretMode ? '> 該当雌犬のスケジュールを強制確保中...' : '> 地域課へ出動指令を送信中...'}</p>
-                      <p className="animate-pulse delay-2000" style={{animationDelay: '2s'}}>{isSecretMode ? '> パトカーのGPS偽装を完了...' : '> 完了までしばらくお待ちください。'}</p>
+                    <div
+                      className={`w-16 h-16 border-t-4 rounded-full animate-spin ${
+                        isSecretMode ? "border-rose-600" : "border-[#003366]"
+                      }`}
+                    ></div>
+                    <div
+                      className={`text-sm font-black tracking-widest ${
+                        isSecretMode ? "text-rose-700" : "text-[#003366]"
+                      }`}
+                    >
+                      <p className="animate-pulse mb-2">
+                        {isSecretMode
+                          ? "> 特例奉仕プロトコルを確認中..."
+                          : "> 通報内容を精査中..."}
+                      </p>
+                      <p
+                        className="animate-pulse delay-1000 mb-2"
+                        style={{ animationDelay: "1s" }}
+                      >
+                        {isSecretMode
+                          ? "> 該当雌犬のスケジュールを強制確保中..."
+                          : "> 地域課へ出動指令を送信中..."}
+                      </p>
+                      <p
+                        className="animate-pulse delay-2000"
+                        style={{ animationDelay: "2s" }}
+                      >
+                        {isSecretMode
+                          ? "> パトカーのGPS偽装を完了..."
+                          : "> 完了までしばらくお待ちください。"}
+                      </p>
                     </div>
                   </div>
                 ) : (
@@ -588,24 +790,62 @@ const DispatchView = ({ setSelectedOfficer }) => {
                     {isSecretMode ? (
                       <div className="space-y-6">
                         <div className="flex items-center gap-2 text-rose-600 mb-2">
-                          <Flame size={18} /> <h4 className="font-black tracking-widest uppercase">サービスコース選択</h4>
+                          <Flame size={18} />{" "}
+                          <h4 className="font-black tracking-widest uppercase">
+                            サービスコース選択
+                          </h4>
                         </div>
                         <div className="grid grid-cols-1 gap-3">
-                          {dispatchData.secret.services.map(svc => (
-                            <div key={svc.id} onClick={() => setSelectedService(svc)} className={`p-4 border-2 cursor-pointer transition-all flex justify-between items-center ${selectedService.id === svc.id ? 'bg-rose-50 border-rose-400' : 'bg-white border-rose-100 hover:border-rose-300'}`}>
+                          {/* 动态读取该女警的专属 services */}
+                          {(
+                            callingOfficer.services ||
+                            dispatchData.secret.services
+                          ).map((svc) => (
+                            <div
+                              key={svc.id}
+                              onClick={() => setSelectedService(svc)}
+                              className={`p-4 border-2 cursor-pointer transition-all flex justify-between items-center ${
+                                selectedService?.id === svc.id
+                                  ? "bg-rose-50 border-rose-400"
+                                  : "bg-white border-rose-100 hover:border-rose-300"
+                              }`}
+                            >
                               <div>
-                                <div className="font-black text-rose-900">{svc.name} <span className="text-[10px] text-rose-400 ml-2">{svc.duration}</span></div>
-                                <div className="text-[10px] text-rose-900/60 mt-1 font-bold">{svc.desc}</div>
+                                <div className="font-black text-rose-900">
+                                  {svc.name}{" "}
+                                  <span className="text-[10px] text-rose-400 ml-2">
+                                    {svc.duration}
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-rose-900/60 mt-1 font-bold">
+                                  {svc.desc}
+                                </div>
                               </div>
-                              <div className="font-mono font-black text-rose-600">¥{svc.price.toLocaleString()}</div>
+                              <div className="font-mono font-black text-rose-600">
+                                ¥{svc.price.toLocaleString()}
+                              </div>
                             </div>
                           ))}
                         </div>
                         <div className="pt-4 border-t border-rose-100">
-                          <h4 className="font-black text-sm text-rose-800 mb-3">オプション (追加要求)</h4>
+                          <h4 className="font-black text-sm text-rose-800 mb-3">
+                            オプション (追加要求)
+                          </h4>
                           <div className="flex flex-wrap gap-2">
-                            {dispatchData.secret.addons.map(addon => (
-                              <button key={addon.id} onClick={() => toggleAddon(addon)} className={`px-3 py-1.5 text-xs font-bold border-2 transition-colors ${selectedAddons.find(a=>a.id === addon.id) ? 'bg-rose-800 text-white border-rose-800' : 'bg-white text-rose-600 border-rose-200 hover:border-rose-400'}`}>
+                            {/* 动态读取该女警的专属 addons */}
+                            {(
+                              callingOfficer.addons ||
+                              dispatchData.secret.addons
+                            ).map((addon) => (
+                              <button
+                                key={addon.id}
+                                onClick={() => toggleAddon(addon)}
+                                className={`px-3 py-1.5 text-xs font-bold border-2 transition-colors ${
+                                  selectedAddons.find((a) => a.id === addon.id)
+                                    ? "bg-rose-800 text-white border-rose-800"
+                                    : "bg-white text-rose-600 border-rose-200 hover:border-rose-400"
+                                }`}
+                              >
                                 {addon.name} (+¥{addon.price.toLocaleString()})
                               </button>
                             ))}
@@ -613,37 +853,86 @@ const DispatchView = ({ setSelectedOfficer }) => {
                         </div>
                         <div className="bg-rose-50/50 p-4 border border-rose-200">
                           <div className="flex justify-between items-end mb-2">
-                            <span className="text-sm font-bold text-rose-800">予想請求額</span>
-                            <span className="text-3xl font-black text-rose-600 font-mono">¥{calculateTotal().toLocaleString()}</span>
+                            <span className="text-sm font-bold text-rose-800">
+                              予想請求額
+                            </span>
+                            <span className="text-3xl font-black text-rose-600 font-mono">
+                              ¥{calculateTotal().toLocaleString()}
+                            </span>
                           </div>
-                          <p className="text-[9px] text-rose-900/50 leading-tight font-bold">{dispatchData.secret.warning}</p>
+                          <p className="text-[9px] text-rose-900/50 leading-tight font-bold">
+                            {dispatchData.secret.warning}
+                          </p>
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-6">
-                         <h4 className="font-black text-[#003366] text-lg border-b border-blue-50 pb-2">{dispatchData.surface.title}</h4>
-                         <div className="space-y-4">
-                           <div>
-                             <label className="block text-xs font-bold text-slate-500 mb-1">要請者の氏名</label>
-                             <input type="text" className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500" placeholder="例: 奈媛 太郎" />
-                           </div>
-                           <div>
-                             <label className="block text-xs font-bold text-slate-500 mb-1">現在地 / 派遣先住所</label>
-                             <input type="text" className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500" placeholder="GPSロケーションを許可、または住所を入力" />
-                           </div>
-                           <div>
-                             <label className="block text-xs font-bold text-slate-500 mb-1">事案の種類</label>
-                             <select className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500">
-                               {dispatchData.surface.incidentTypes.map((type, idx) => <option key={idx}>{type}</option>)}
-                             </select>
-                           </div>
-                           <p className="text-[10px] text-red-500 font-medium bg-red-50 p-2 border border-red-100">{dispatchData.surface.warning}</p>
-                         </div>
+                        <h4 className="font-black text-[#003366] text-lg border-b border-blue-50 pb-2">
+                          {dispatchData.surface.title}
+                        </h4>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 mb-1">
+                              要請者の氏名
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500"
+                              placeholder="例: 奈媛 太郎"
+                            />
+                          </div>
+                          {/* 新增的电话号码输入框 */}
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 mb-1">
+                              連絡先 (電話番号)
+                            </label>
+                            <input
+                              type="tel"
+                              className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500 font-mono"
+                              placeholder="例: 090-XXXX-XXXX"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 mb-1">
+                              現在地 / 派遣先住所
+                            </label>
+                            <input
+                              type="text"
+                              className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500"
+                              placeholder="GPSロケーションを許可、または住所を入力"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-500 mb-1">
+                              事案の種類
+                            </label>
+                            <select className="w-full p-3 bg-slate-50 border border-slate-200 focus:outline-blue-500">
+                              {dispatchData.surface.incidentTypes.map(
+                                (type, idx) => (
+                                  <option key={idx}>{type}</option>
+                                )
+                              )}
+                            </select>
+                          </div>
+                          <p className="text-[10px] text-red-500 font-medium bg-red-50 p-2 border border-red-100">
+                            {dispatchData.surface.warning}
+                          </p>
+                        </div>
                       </div>
                     )}
                     <div className="mt-8">
-                      <button onClick={handleDispatchSubmit} className={`w-full py-4 font-black tracking-widest uppercase transition-transform active:scale-95 flex items-center justify-center gap-2 ${isSecretMode ? 'bg-rose-800 text-white shadow-lg hover:bg-rose-900' : 'bg-[#003366] text-white hover:bg-[#002244]'}`}>
-                        <Send size={18} /> {isSecretMode ? '救済を確定し、雌犬を呼び出す' : '緊急出動を要請する'}
+                      <button
+                        onClick={handleDispatchSubmit}
+                        className={`w-full py-4 font-black tracking-widest uppercase transition-transform active:scale-95 flex items-center justify-center gap-2 ${
+                          isSecretMode
+                            ? "bg-rose-800 text-white shadow-lg hover:bg-rose-900"
+                            : "bg-[#003366] text-white hover:bg-[#002244]"
+                        }`}
+                      >
+                        <Send size={18} />{" "}
+                        {isSecretMode
+                          ? "救済を確定し、雌犬を呼び出す"
+                          : "緊急出動を要請する"}
                       </button>
                     </div>
                   </>
@@ -653,177 +942,341 @@ const DispatchView = ({ setSelectedOfficer }) => {
           </div>
         )}
 
+        {/* =======================================
+            主大盘界面 (雷达与人员列表)
+           ======================================= */}
         <div className="max-w-[1400px] mx-auto space-y-12 px-4">
-          
-          {/* =======================================
-              雷达大盘风格头部 (血肉色白底雷达)
-             ======================================= */}
-          <header className={`relative p-10 border-b-4 overflow-hidden rounded-xl ${isSecretMode ? 'bg-white border-rose-800 shadow-[0_10px_30px_rgba(225,29,72,0.05)]' : 'bg-[#001833] border-[#003366] shadow-xl'}`}>
-            
-            {/* 雷达动态背景 */}
+          <header
+            className={`relative p-10 border-b-4 overflow-hidden rounded-xl ${
+              isSecretMode
+                ? "bg-white border-rose-800 shadow-[0_10px_30px_rgba(225,29,72,0.05)]"
+                : "bg-[#001833] border-[#003366] shadow-xl"
+            }`}
+          >
             <div className="absolute inset-0 pointer-events-none opacity-50">
-              <div className={`absolute inset-0 bg-[size:40px_40px] ${isSecretMode ? 'bg-[linear-gradient(rgba(225,29,72,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(225,29,72,0.05)_1px,transparent_1px)]' : 'bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)]'}`}></div>
-              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full ${isSecretMode ? 'border-rose-200' : 'border-emerald-500/20'}`}></div>
-              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border rounded-full ${isSecretMode ? 'border-rose-200' : 'border-emerald-500/20'}`}></div>
+              <div
+                className={`absolute inset-0 bg-[size:40px_40px] ${
+                  isSecretMode
+                    ? "bg-[linear-gradient(rgba(225,29,72,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(225,29,72,0.05)_1px,transparent_1px)]"
+                    : "bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)]"
+                }`}
+              ></div>
+              <div
+                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full ${
+                  isSecretMode ? "border-rose-200" : "border-emerald-500/20"
+                }`}
+              ></div>
+              <div
+                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border rounded-full ${
+                  isSecretMode ? "border-rose-200" : "border-emerald-500/20"
+                }`}
+              ></div>
               <div className="absolute top-1/2 left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 animate-spin [animation-duration:4s]">
-                <div className={`w-1/2 h-1/2 rounded-tl-full border-l-2 ${isSecretMode ? 'bg-gradient-to-br from-rose-200 to-transparent border-rose-400' : 'bg-gradient-to-br from-emerald-500/40 to-transparent border-emerald-400'}`}></div>
+                <div
+                  className={`w-1/2 h-1/2 rounded-tl-full border-l-2 ${
+                    isSecretMode
+                      ? "bg-gradient-to-br from-rose-200 to-transparent border-rose-400"
+                      : "bg-gradient-to-br from-emerald-500/40 to-transparent border-emerald-400"
+                  }`}
+                ></div>
               </div>
             </div>
 
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-6">
-                {/* 触发暗门的星星 */}
-                <div onClick={handleSecretTrigger} className={`cursor-crosshair w-20 h-20 flex items-center justify-center rounded-full border-4 backdrop-blur-md group ${isSecretMode ? 'bg-rose-50 border-rose-200 shadow-inner' : 'bg-white/10 border-white/20'}`}>
-                  <Star className={`transition-all duration-300 ${isSecretMode ? 'text-rose-500 fill-rose-500 scale-125' : 'text-amber-400 fill-amber-400 group-hover:scale-110'}`} size={36} />
+                <div
+                  onClick={handleSecretTrigger}
+                  className={`cursor-crosshair w-20 h-20 flex items-center justify-center rounded-full border-4 backdrop-blur-md group ${
+                    isSecretMode
+                      ? "bg-rose-50 border-rose-200 shadow-inner"
+                      : "bg-white/10 border-white/20"
+                  }`}
+                >
+                  <Star
+                    className={`transition-all duration-300 ${
+                      isSecretMode
+                        ? "text-rose-500 fill-rose-500 scale-125"
+                        : "text-amber-400 fill-amber-400 group-hover:scale-110"
+                    }`}
+                    size={36}
+                  />
                 </div>
                 <div>
-                  <h2 className={`text-4xl md:text-5xl font-black tracking-widest drop-shadow-sm ${isSecretMode ? 'text-rose-900' : 'text-white'}`}>
-                    {isSecretMode ? '特例出動・緊急性欲処理管制' : '緊急出動管制センター'}
+                  <h2
+                    className={`text-4xl md:text-5xl font-black tracking-widest drop-shadow-sm ${
+                      isSecretMode ? "text-rose-900" : "text-white"
+                    }`}
+                  >
+                    {isSecretMode
+                      ? "特例奉仕・性欲処理統制局"
+                      : "緊急出動管制センター"}
                   </h2>
-                  <p className={`text-sm font-bold uppercase tracking-[0.4em] mt-2 ${isSecretMode ? 'text-rose-500' : 'text-emerald-400 drop-shadow-[0_0_5px_#10b981]'}`}>
-                    {isSecretMode ? 'NCPD Delivery Health System' : 'Real-time Dispatch Control'}
+                  <p
+                    className={`text-sm font-bold uppercase tracking-[0.4em] mt-2 ${
+                      isSecretMode
+                        ? "text-rose-500"
+                        : "text-emerald-400 drop-shadow-[0_0_5px_#10b981]"
+                    }`}
+                  >
+                    {isSecretMode
+                      ? "NCPD Delivery Health System"
+                      : "Real-time Dispatch Control"}
                   </p>
                 </div>
               </div>
 
-              <div className={`flex gap-6 p-4 border backdrop-blur-sm rounded-lg ${isSecretMode ? 'border-rose-200 bg-white/80' : 'border-blue-400/30 bg-black/40'}`}>
+              <div
+                className={`flex gap-6 p-4 border backdrop-blur-sm rounded-lg ${
+                  isSecretMode
+                    ? "border-rose-200 bg-white/80"
+                    : "border-blue-400/30 bg-black/40"
+                }`}
+              >
                 <div className="text-center px-4 border-r border-slate-200/20">
-                  <p className={`text-[10px] font-bold uppercase ${isSecretMode ? 'text-rose-400' : 'text-slate-400'}`}>稼働中</p>
-                  <p className={`text-3xl font-black ${isSecretMode ? 'text-rose-800' : 'text-white'}`}>58<span className={`text-xs ml-1 ${isSecretMode ? 'text-rose-400' : 'text-white/50'}`}>名</span></p>
+                  <p
+                    className={`text-[10px] font-bold uppercase ${
+                      isSecretMode ? "text-rose-400" : "text-slate-400"
+                    }`}
+                  >
+                    稼働中
+                  </p>
+                  <p
+                    className={`text-3xl font-black ${
+                      isSecretMode ? "text-rose-800" : "text-white"
+                    }`}
+                  >
+                    58
+                    <span
+                      className={`text-xs ml-1 ${
+                        isSecretMode ? "text-rose-400" : "text-white/50"
+                      }`}
+                    >
+                      名
+                    </span>
+                  </p>
                 </div>
                 <div className="text-center px-4">
-                  <p className={`text-[10px] font-bold uppercase ${isSecretMode ? 'text-rose-400' : 'text-slate-400'}`}>要請ロック</p>
-                  <p className={`text-3xl font-black ${hasPendingDispatch ? 'text-rose-500 animate-pulse' : (isSecretMode ? 'text-rose-800' : 'text-emerald-400')}`}>
-                    {hasPendingDispatch ? 'LOCKED' : 'ACTIVE'}
+                  <p
+                    className={`text-[10px] font-bold uppercase ${
+                      isSecretMode ? "text-rose-400" : "text-slate-400"
+                    }`}
+                  >
+                    要請ロック
+                  </p>
+                  <p
+                    className={`text-3xl font-black ${
+                      hasPendingDispatch
+                        ? "text-rose-500 animate-pulse"
+                        : isSecretMode
+                        ? "text-rose-800"
+                        : "text-emerald-400"
+                    }`}
+                  >
+                    {hasPendingDispatch ? "LOCKED" : "ACTIVE"}
                   </p>
                 </div>
               </div>
             </div>
           </header>
 
-          {/* 警员卡片网格区 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {slots.map((off, i) => {
               if (off.isPlaceholder) {
                 return (
-                  <div key={i} className={`w-[230px] h-[560.67px] border flex flex-col items-center justify-center p-10 opacity-30 ${isSecretMode ? 'bg-rose-50 border-rose-200' : 'bg-white/40 border-dashed border-blue-100'}`}>
-                    <Shield size={64} className={`${isSecretMode ? 'text-rose-300' : 'text-blue-100'} mb-4 opacity-50`} />
-                    <p className={`text-[10px] font-bold uppercase tracking-[0.3em] ${isSecretMode ? 'text-rose-300' : 'text-blue-100'}`}>未登録</p>
+                  <div
+                    key={i}
+                    className={`w-[230px] h-[560.67px] border flex flex-col items-center justify-center p-10 opacity-30 ${
+                      isSecretMode
+                        ? "bg-rose-50 border-rose-200"
+                        : "bg-white/40 border-dashed border-blue-100"
+                    }`}
+                  >
+                    <Shield
+                      size={64}
+                      className={`${
+                        isSecretMode ? "text-rose-300" : "text-blue-100"
+                      } mb-4 opacity-50`}
+                    />
+                    <p
+                      className={`text-[10px] font-bold uppercase tracking-[0.3em] ${
+                        isSecretMode ? "text-rose-300" : "text-blue-100"
+                      }`}
+                    >
+                      未登録
+                    </p>
                   </div>
                 );
               }
 
               const statusDisplay = getStatusDisplay(off.status, off.shift);
-              // 自动识别当前的徽章
-              const badges = isSecretMode ? (off.secretBadges || ['特例枠']) : (off.surfaceBadges || ['正規職員']);
+              const badges = isSecretMode
+                ? off.secretBadges || ["特例枠"]
+                : off.surfaceBadges || ["正規職員"];
 
               return (
-                <div key={i} className={`group w-[230px] h-[560.67px] flex flex-col shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 border overflow-hidden relative ${isSecretMode ? 'bg-white border-rose-200' : 'bg-white border-blue-50'}`}>
-                  
-                  {/* 徽章 */}
+                <div
+                  key={i}
+                  className={`group w-[230px] h-[560.67px] flex flex-col shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-700 border overflow-hidden relative ${
+                    isSecretMode
+                      ? "bg-white border-rose-200"
+                      : "bg-white border-blue-50"
+                  }`}
+                >
                   <div className="absolute top-0 left-0 right-0 z-20 flex justify-between p-2 pointer-events-none text-white">
                     <div className="flex gap-1 flex-wrap">
                       {badges.map((b, idx) => (
-                        <span key={idx} className={`${isSecretMode ? 'bg-rose-800/90' : 'bg-[#003366]/90'} px-2 py-0.5 text-[8px] font-black uppercase backdrop-blur-sm`}>{b}</span>
+                        <span
+                          key={idx}
+                          className={`${
+                            isSecretMode ? "bg-rose-800/90" : "bg-[#003366]/90"
+                          } px-2 py-0.5 text-[8px] font-black uppercase backdrop-blur-sm`}
+                        >
+                          {b}
+                        </span>
                       ))}
                     </div>
                   </div>
 
-                  {/* 照片区 (表世界：姓名+警衔；里世界：姓名+年龄) */}
-                  <div className={`h-[360px] relative overflow-hidden ${isSecretMode ? 'bg-rose-50' : 'bg-slate-100'}`}>
-                    <img src={off.img} className={`object-cover w-full h-full transition-all duration-700 group-hover:scale-105 ${statusDisplay.disable ? "grayscale opacity-40" : "opacity-95"}`} />
+                  <div
+                    className={`h-[360px] relative overflow-hidden ${
+                      isSecretMode ? "bg-rose-50" : "bg-slate-100"
+                    }`}
+                  >
+                    <img
+                      src={off.img}
+                      className={`object-cover w-full h-full transition-all duration-700 group-hover:scale-105 ${
+                        statusDisplay.disable
+                          ? "grayscale opacity-40"
+                          : "opacity-95"
+                      }`}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                     <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h4 className="text-2xl font-black drop-shadow-lg tracking-tighter">{off.name}</h4>
-                      <p className={`text-[10px] font-bold italic mt-1 ${isSecretMode ? 'text-rose-200' : 'text-blue-200'}`}>
-                        {isSecretMode ? `年齢: ${off.age}歳` : `階級: ${off.rank}`}
+                      <h4 className="text-2xl font-black drop-shadow-lg tracking-tighter">
+                        {off.name}
+                      </h4>
+                      <p
+                        className={`text-[10px] font-bold italic mt-1 ${
+                          isSecretMode ? "text-rose-200" : "text-blue-200"
+                        }`}
+                      >
+                        {isSecretMode
+                          ? `年齢: ${off.age}歳`
+                          : `階級: ${off.rank}`}
                       </p>
                     </div>
                   </div>
-                  
-                  {/* 详细信息卡片区 */}
+
                   <div className="flex-1 p-4 flex flex-col justify-between space-y-4 bg-white/80 backdrop-blur-md">
                     {isSecretMode ? (
-                      // --- 里世界展示信息 ---
                       <div className="space-y-3">
                         <div className="bg-rose-50/50 p-2 border border-rose-100">
-                          <span className="text-[8px] font-black text-rose-400 uppercase block mb-0.5">スリーサイズ (肉体情報)</span>
-                          <p className="text-[11px] font-bold font-mono tracking-tight text-rose-900">{off.size}</p>
+                          <span className="text-[8px] font-black text-rose-400 uppercase block mb-0.5">
+                            スリーサイズ (肉体情報)
+                          </span>
+                          <p className="text-[11px] font-bold font-mono tracking-tight text-rose-900">
+                            {off.size}
+                          </p>
                         </div>
                         <div className="bg-rose-50/50 p-2 border border-rose-100">
-                          <span className="text-[8px] font-black text-rose-400 uppercase block mb-0.5">得意な奉仕 (特技)</span>
-                          <p className="text-[11px] font-bold text-rose-900 line-clamp-1">{off.specialty || '本番行為、奉仕全般'}</p>
+                          <span className="text-[8px] font-black text-rose-400 uppercase block mb-0.5">
+                            得意な奉仕 (特技)
+                          </span>
+                          <p className="text-[11px] font-bold text-rose-900 line-clamp-1">
+                            {off.specialty || "本番行為、奉仕全般"}
+                          </p>
                         </div>
                         <div className="flex items-center justify-between px-1">
-                          <span className="text-[9px] font-black text-rose-400">夜の奉仕評価</span>
-                          {renderStars(off.rating || 4.5, true)}
+                          <span className="text-[9px] font-black text-rose-400">
+                            夜の奉仕評価
+                          </span>
+                          {/* 读取专属的里世界评分 */}
+                          {renderStars(off.secretRating || 4.5, true)}
                         </div>
                       </div>
                     ) : (
-                      // --- 表世界展示信息 ---
                       <div className="space-y-3">
                         <div className="bg-slate-50 p-2 border border-slate-100">
-                          <span className="text-[8px] font-black text-slate-400 uppercase block mb-0.5">所属部署</span>
-                          <p className="text-[11px] font-bold text-[#003366]">{off.dept}</p>
+                          <span className="text-[8px] font-black text-slate-400 uppercase block mb-0.5">
+                            所属部署
+                          </span>
+                          <p className="text-[11px] font-bold text-[#003366]">
+                            {off.dept}
+                          </p>
                         </div>
                         <div className="bg-slate-50 p-2 border border-slate-100">
-                          <span className="text-[8px] font-black text-slate-400 uppercase block mb-0.5">完了した救済任務</span>
-                          <p className="text-[11px] font-bold font-mono text-[#003366]">{off.dispatches || Math.floor(Math.random()*500)} 件</p>
+                          <span className="text-[8px] font-black text-slate-400 uppercase block mb-0.5">
+                            完了した救済任務
+                          </span>
+                          <p className="text-[11px] font-bold font-mono text-[#003366]">
+                            {off.dispatches || Math.floor(Math.random() * 500)}{" "}
+                            件
+                          </p>
                         </div>
                         <div className="flex items-center justify-between px-1">
-                          <span className="text-[9px] font-black text-slate-400">市民評価</span>
-                          {renderStars(off.rating || 4.5, false)}
+                          <span className="text-[9px] font-black text-slate-400">
+                            市民評価
+                          </span>
+                          {/* 读取专属的表世界评分 */}
+                          {renderStars(off.surfaceRating || 4.5, false)}
                         </div>
                       </div>
                     )}
-                    
-                    {/* 状态灯与呼叫按钮 */}
-                    <div 
+
+                    <div
                       className={`flex items-center justify-between pt-3 border-t ${
-                        isSecretMode ? 'border-rose-100' : 'border-slate-50'
+                        isSecretMode ? "border-rose-100" : "border-slate-50"
                       }`}
                     >
                       <div className="flex flex-col justify-center gap-1">
                         {/* 上半部分：红绿灯状态 */}
                         <div className="flex items-center gap-2">
-                          <div 
+                          <div
                             className={`w-2 h-2 rounded-full ${
                               statusDisplay.color
-                              } ${!statusDisplay.disable ? 'animate-pulse' : ''}`}
-                            ></div>
-                            <span 
-                              className={`text-[10px] font-black ${
-                                isSecretMode ? 'text-rose-800' : 'text-slate-600'
-                              }`}
-                            >
-                              {statusDisplay.text}
-                            </span>
-                          </div>
-                          {/* 下半部分：新增的排班时间显示 */}
-                          <span 
-                            className={`text-[10px] font-mono font-bold pl-0 ${
-                              isSecretMode ? 'text-rose-400' : 'text-slate-400'
+                            } ${!statusDisplay.disable ? "animate-pulse" : ""}`}
+                          ></div>
+                          <span
+                            className={`text-[10px] font-black ${
+                              isSecretMode ? "text-rose-800" : "text-slate-600"
                             }`}
                           >
-                            {isSecretMode ? '奉仕シフト: ' : '勤務時間: '}{off.shift}
+                            {statusDisplay.text}
                           </span>
                         </div>
-  
-                            {/* 右侧的呼叫按钮保持完全不变 */}
-                            <button 
-                              onClick={() => openForm(off)}
-                              disabled={statusDisplay.disable || hasPendingDispatch}
-                              className={`w-10 h-10 flex items-center justify-center shadow-md transition-all 
-                              ${statusDisplay.disable || hasPendingDispatch 
-                                    ? (isSecretMode ? 'bg-rose-50 text-rose-200' : 'bg-slate-100 text-slate-300') + ' cursor-not-allowed'
-                                      : isSecretMode 
-                                      ? 'bg-rose-800 hover:bg-rose-900 text-white active:scale-90' 
-                                      : 'bg-[#003366] hover:bg-[#002244] text-white active:scale-90'
-                              }`}
-                            >
-                              {statusDisplay.disable || hasPendingDispatch ? <X size={16} /> : <PhoneCall size={16} fill="currentColor" />}
-                              </button>
-                        </div>
+                        {/* 下半部分：新增的排班时间显示 */}
+                        <span
+                          className={`text-[10px] font-mono font-bold pl-0 ${
+                            isSecretMode ? "text-rose-400" : "text-slate-400"
+                          }`}
+                        >
+                          {isSecretMode ? "奉仕シフト: " : "勤務時間: "}
+                          {off.shift}
+                        </span>
+                      </div>
+
+                      {/* 右侧的呼叫按钮保持完全不变 */}
+                      <button
+                        onClick={() => openForm(off)}
+                        disabled={statusDisplay.disable || hasPendingDispatch}
+                        className={`w-10 h-10 flex items-center justify-center shadow-md transition-all 
+      ${
+        statusDisplay.disable || hasPendingDispatch
+          ? (isSecretMode
+              ? "bg-rose-50 text-rose-200"
+              : "bg-slate-100 text-slate-300") + " cursor-not-allowed"
+          : isSecretMode
+          ? "bg-rose-800 hover:bg-rose-900 text-white active:scale-90"
+          : "bg-[#003366] hover:bg-[#002244] text-white active:scale-90"
+      }`}
+                      >
+                        {statusDisplay.disable || hasPendingDispatch ? (
+                          <X size={16} />
+                        ) : (
+                          <PhoneCall size={16} fill="currentColor" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -883,27 +1336,31 @@ const DetentionView = () => (
 // ==========================================
 const OrganizationView = ({ setActiveTab }) => {
   const [activeDept, setActiveDept] = useState(departments[0]);
-  const [viewMode, setViewMode] = useState('dept'); 
+  const [viewMode, setViewMode] = useState("dept");
   const [activeOfficer, setActiveOfficer] = useState(null);
-  
+
   const [unlockedProfiles, setUnlockedProfiles] = useState(new Set());
   const [showModal, setShowModal] = useState(false);
-  const [slideDirection, setSlideDirection] = useState('up');
+  const [slideDirection, setSlideDirection] = useState("up");
 
   const iconMap = {
-    Car: <Car size={20} />, Shield: <Shield size={20} />, Search: <Search size={20} />,
-    Briefcase: <Briefcase size={20} />, Monitor: <Monitor size={20} />, FileText: <FileText size={20} />
+    Car: <Car size={20} />,
+    Shield: <Shield size={20} />,
+    Search: <Search size={20} />,
+    Briefcase: <Briefcase size={20} />,
+    Monitor: <Monitor size={20} />,
+    FileText: <FileText size={20} />,
   };
 
   const handleDeptClick = (dept) => {
     setActiveDept(dept);
-    setViewMode('dept');
+    setViewMode("dept");
   };
 
   const openOfficerDetail = (officer) => {
-    setSlideDirection('up'); 
+    setSlideDirection("up");
     setActiveOfficer(officer);
-    setViewMode('detail');
+    setViewMode("detail");
   };
 
   const handleUnlockConfirm = () => {
@@ -913,80 +1370,119 @@ const OrganizationView = ({ setActiveTab }) => {
 
   const handlePrevOfficer = () => {
     if (!activeDept.roster) return;
-    setSlideDirection('left');
-    const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
-    const prevIndex = currentIndex === 0 ? activeDept.roster.length - 1 : currentIndex - 1;
+    setSlideDirection("left");
+    const currentIndex = activeDept.roster.findIndex(
+      (o) => o.id === activeOfficer.id
+    );
+    const prevIndex =
+      currentIndex === 0 ? activeDept.roster.length - 1 : currentIndex - 1;
     setActiveOfficer(activeDept.roster[prevIndex]);
   };
 
   const handleNextOfficer = () => {
     if (!activeDept.roster) return;
-    setSlideDirection('right');
-    const currentIndex = activeDept.roster.findIndex(o => o.id === activeOfficer.id);
-    const nextIndex = currentIndex === activeDept.roster.length - 1 ? 0 : currentIndex + 1;
+    setSlideDirection("right");
+    const currentIndex = activeDept.roster.findIndex(
+      (o) => o.id === activeOfficer.id
+    );
+    const nextIndex =
+      currentIndex === activeDept.roster.length - 1 ? 0 : currentIndex + 1;
     setActiveOfficer(activeDept.roster[nextIndex]);
   };
 
-  if (viewMode === 'detail' && activeOfficer) {
+  if (viewMode === "detail" && activeOfficer) {
     const isUnlocked = unlockedProfiles.has(activeOfficer.id);
-    
+
     // 根据滑动方向，自动赋予我们在 styles.css 里写好的类名
-    const contentAnimateClass = slideDirection === 'right' ? 'anim-right' 
-                              : slideDirection === 'left' ? 'anim-left' 
-                              : 'anim-up';
+    const contentAnimateClass =
+      slideDirection === "right"
+        ? "anim-right"
+        : slideDirection === "left"
+        ? "anim-left"
+        : "anim-up";
 
     return (
       <div className="h-[calc(100vh-64px)] bg-[#050505] flex relative overflow-hidden anim-bg">
-        
         {/* 左右切换箭头 */}
         {activeDept.roster && activeDept.roster.length > 1 && (
           <>
-            <button 
+            <button
               onClick={handlePrevOfficer}
               className="absolute left-6 top-1/2 -translate-y-1/2 z-[60] w-16 h-16 flex items-center justify-center rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-pink-600 hover:border-pink-500 backdrop-blur-md transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)] group"
             >
-              <ChevronLeft size={36} className="group-hover:-translate-x-1 transition-transform" />
+              <ChevronLeft
+                size={36}
+                className="group-hover:-translate-x-1 transition-transform"
+              />
             </button>
-            <button 
+            <button
               onClick={handleNextOfficer}
               className="absolute right-6 top-1/2 -translate-y-1/2 z-[60] w-16 h-16 flex items-center justify-center rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-pink-600 hover:border-pink-500 backdrop-blur-md transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)] group"
             >
-              <ChevronRight size={36} className="group-hover:translate-x-1 transition-transform" />
+              <ChevronRight
+                size={36}
+                className="group-hover:translate-x-1 transition-transform"
+              />
             </button>
           </>
         )}
 
         {/* 左侧照片 */}
-        <div key={`img-${activeOfficer.id}`} className={`w-1/2 h-full relative ${contentAnimateClass}`}>
-          <img src={activeOfficer.img} className="w-full h-full object-cover opacity-80" alt={activeOfficer.name} />
+        <div
+          key={`img-${activeOfficer.id}`}
+          className={`w-1/2 h-full relative ${contentAnimateClass}`}
+        >
+          <img
+            src={activeOfficer.img}
+            className="w-full h-full object-cover opacity-80"
+            alt={activeOfficer.name}
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#050505]/50 to-[#050505]"></div>
-          
-          <button 
-            onClick={() => setViewMode('list')}
+
+          <button
+            onClick={() => setViewMode("list")}
             className="absolute top-8 left-8 flex items-center gap-2 text-white/70 hover:text-white bg-black/40 px-4 py-2 rounded-full backdrop-blur-md transition-all border border-white/10 hover:bg-black/60 z-10"
           >
             <ChevronLeft size={18} /> リストに戻る (返回列表)
           </button>
 
           <div className="absolute bottom-12 left-12 right-12 text-white drop-shadow-2xl">
-            <h1 className="text-6xl font-black tracking-tighter mb-2">{activeOfficer.name}</h1>
-            <p className="text-xl font-bold text-amber-500 uppercase tracking-widest">{activeOfficer.rank} | {activeDept.name}</p>
+            <h1 className="text-6xl font-black tracking-tighter mb-2">
+              {activeOfficer.name}
+            </h1>
+            <p className="text-xl font-bold text-amber-500 uppercase tracking-widest">
+              {activeOfficer.rank} | {activeDept.name}
+            </p>
           </div>
         </div>
 
         {/* 右侧情报区 */}
-        <div key={`text-${activeOfficer.id}`} className={`w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative z-20 ${contentAnimateClass} anim-delay-100`}>
+        <div
+          key={`text-${activeOfficer.id}`}
+          className={`w-1/2 h-full overflow-y-auto p-12 text-zinc-300 relative z-20 ${contentAnimateClass} anim-delay-100`}
+        >
           <div className="max-w-xl mx-auto space-y-10 pb-20">
             {/* 基础情报 */}
             <div className="space-y-4">
               <div className="flex items-center gap-3 border-b border-zinc-800 pb-2">
                 <FileText className="text-blue-500" size={20} />
-                <h3 className="text-xl font-black text-white tracking-widest">公開プロファイル (公开信息)</h3>
+                <h3 className="text-xl font-black text-white tracking-widest">
+                  公開プロファイル (公开信息)
+                </h3>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm font-mono bg-zinc-900 p-4 border border-zinc-800 rounded">
-                <p><span className="text-zinc-500 mr-2">AGE:</span> {activeOfficer.age}</p>
-                <p><span className="text-zinc-500 mr-2">ROLE:</span> {activeOfficer.role}</p>
-                <p className="col-span-2"><span className="text-zinc-500 mr-2">SIZE:</span> <span className="text-amber-400">{activeOfficer.size}</span></p>
+                <p>
+                  <span className="text-zinc-500 mr-2">AGE:</span>{" "}
+                  {activeOfficer.age}
+                </p>
+                <p>
+                  <span className="text-zinc-500 mr-2">ROLE:</span>{" "}
+                  {activeOfficer.role}
+                </p>
+                <p className="col-span-2">
+                  <span className="text-zinc-500 mr-2">SIZE:</span>{" "}
+                  <span className="text-amber-400">{activeOfficer.size}</span>
+                </p>
               </div>
               <div className="text-sm leading-relaxed whitespace-pre-line bg-zinc-900/50 p-5 rounded border-l-2 border-blue-500">
                 {activeOfficer.basicInfo}
@@ -996,20 +1492,32 @@ const OrganizationView = ({ setActiveTab }) => {
             {/* 深层情报 (加密区) */}
             <div className="space-y-4 pt-6">
               <div className="flex items-center gap-3 border-b border-zinc-800 pb-2">
-                {isUnlocked ? <Unlock className="text-pink-500" size={20} /> : <Lock className="text-rose-500" size={20} />}
-                <h3 className="text-xl font-black text-white tracking-widest">極秘レコード (N.F 深层情报)</h3>
+                {isUnlocked ? (
+                  <Unlock className="text-pink-500" size={20} />
+                ) : (
+                  <Lock className="text-rose-500" size={20} />
+                )}
+                <h3 className="text-xl font-black text-white tracking-widest">
+                  極秘レコード (N.F 深层情报)
+                </h3>
               </div>
 
               {!isUnlocked ? (
-                <div 
+                <div
                   onClick={() => setShowModal(true)}
                   className="relative group cursor-pointer overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900"
                 >
                   <div className="p-8 filter blur-sm opacity-30 select-none text-sm leading-relaxed h-48">
-                    [WARNING: CLASSIFIED DATA] This section contains highly sensitive behavioral logs, off-duty activities, and N.F platform performance metrics. Access restricted to Premium Subscribers only. 
+                    [WARNING: CLASSIFIED DATA] This section contains highly
+                    sensitive behavioral logs, off-duty activities, and N.F
+                    platform performance metrics. Access restricted to Premium
+                    Subscribers only.
                   </div>
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 group-hover:bg-black/80 transition-all">
-                    <Lock className="text-rose-500 mb-3 group-hover:scale-110 transition-transform" size={32} />
+                    <Lock
+                      className="text-rose-500 mb-3 group-hover:scale-110 transition-transform"
+                      size={32}
+                    />
                     <span className="text-rose-500 font-black tracking-widest text-sm border border-rose-500/50 px-6 py-2 bg-rose-950/50">
                       タップしてロック解除 (点击解锁)
                     </span>
@@ -1026,24 +1534,33 @@ const OrganizationView = ({ setActiveTab }) => {
                     <div className="flex gap-4 w-full">
                       {activeOfficer.hiddenImg1 && (
                         <div className="flex-1 h-48 bg-[#0a0508] rounded border border-pink-900/30 overflow-hidden relative group cursor-pointer shadow-inner">
-                          <img src={activeOfficer.hiddenImg1} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="Classified File 1" />
+                          <img
+                            src={activeOfficer.hiddenImg1}
+                            className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
+                            alt="Classified File 1"
+                          />
                           <div className="absolute inset-0 ring-1 ring-inset ring-pink-500/20 pointer-events-none"></div>
                         </div>
                       )}
                       {activeOfficer.hiddenImg2 && (
                         <div className="flex-1 h-48 bg-[#0a0508] rounded border border-pink-900/30 overflow-hidden relative group cursor-pointer shadow-inner">
-                          <img src={activeOfficer.hiddenImg2} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="Classified File 2" />
+                          <img
+                            src={activeOfficer.hiddenImg2}
+                            className="w-full h-full object-cover opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700"
+                            alt="Classified File 2"
+                          />
                           <div className="absolute inset-0 ring-1 ring-inset ring-pink-500/20 pointer-events-none"></div>
                         </div>
                       )}
                     </div>
                   )}
-                  
-                  <button 
-                    onClick={() => setActiveTab('nf-platform')}
+
+                  <button
+                    onClick={() => setActiveTab("nf-platform")}
                     className="w-full py-4 bg-gradient-to-r from-pink-700 to-rose-600 text-white font-black tracking-widest uppercase hover:scale-[1.02] transition-transform shadow-lg shadow-pink-900/50 flex justify-center items-center gap-2"
                   >
-                    <Monitor size={18} /> N.F クリエイターページへ (前往她的主页)
+                    <Monitor size={18} /> N.F クリエイターページへ
+                    (前往她的主页)
                   </button>
                 </div>
               )}
@@ -1058,20 +1575,30 @@ const OrganizationView = ({ setActiveTab }) => {
               <div className="w-16 h-16 bg-pink-950/50 border border-pink-500 flex items-center justify-center mx-auto mb-6 rounded-full">
                 <Zap className="text-pink-500" size={30} />
               </div>
-              <h3 className="text-2xl font-black text-white mb-2">プレミアム購読の確認</h3>
+              <h3 className="text-2xl font-black text-white mb-2">
+                プレミアム購読の確認
+              </h3>
               <p className="text-sm text-zinc-400 mb-8 leading-relaxed">
-                対象: <span className="text-pink-400 font-bold">{activeOfficer.name}</span><br/>
-                彼女の N.F チャンネルを購読し、極秘の奉仕記録とプライベート映像を解禁しますか？<br/>
-                <span className="text-xs text-zinc-600 mt-2 block">(購読料が引き落とされます)</span>
+                対象:{" "}
+                <span className="text-pink-400 font-bold">
+                  {activeOfficer.name}
+                </span>
+                <br />
+                彼女の N.F
+                チャンネルを購読し、極秘の奉仕記録とプライベート映像を解禁しますか？
+                <br />
+                <span className="text-xs text-zinc-600 mt-2 block">
+                  (購読料が引き落とされます)
+                </span>
               </p>
               <div className="flex gap-4">
-                <button 
+                <button
                   onClick={() => setShowModal(false)}
                   className="flex-1 py-3 bg-zinc-900 text-zinc-400 font-bold hover:bg-zinc-800 transition-colors"
                 >
                   否、検討する
                 </button>
-                <button 
+                <button
                   onClick={handleUnlockConfirm}
                   className="flex-1 py-3 bg-pink-600 text-white font-black hover:bg-pink-500 transition-colors shadow-lg shadow-pink-900/50"
                 >
@@ -1100,11 +1627,13 @@ const OrganizationView = ({ setActiveTab }) => {
               onClick={() => handleDeptClick(dept)}
               className={`flex items-center p-3 rounded-lg transition-all ${
                 activeDept.id === dept.id
-                  ? 'bg-blue-50 text-[#003366] font-bold border-l-4 border-[#003366]'
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? "bg-blue-50 text-[#003366] font-bold border-l-4 border-[#003366]"
+                  : "text-slate-600 hover:bg-slate-100"
               }`}
             >
-              <div className="mr-3 text-slate-400">{iconMap[dept.icon] || <Shield size={20} />}</div>
+              <div className="mr-3 text-slate-400">
+                {iconMap[dept.icon] || <Shield size={20} />}
+              </div>
               <div className="text-left">
                 <div className="text-sm font-bold">{dept.name}</div>
                 <div className="text-xs text-slate-400">{dept.location}</div>
@@ -1115,16 +1644,22 @@ const OrganizationView = ({ setActiveTab }) => {
       </div>
 
       <div className="flex-1 p-8 overflow-y-auto anim-bg">
-        {viewMode === 'dept' ? (
+        {viewMode === "dept" ? (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 anim-up">
             <div className="border-b border-slate-100 pb-6 mb-6 flex justify-between items-start">
               <div>
-                <h1 className="text-3xl font-bold text-slate-800 mb-1">{activeDept.name}</h1>
+                <h1 className="text-3xl font-bold text-slate-800 mb-1">
+                  {activeDept.name}
+                </h1>
                 <p className="text-slate-500">{activeDept.fullName}</p>
               </div>
               <div className="text-right bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
-                <div className="text-xs text-slate-400 font-bold mb-1">配置場所</div>
-                <div className="font-bold text-slate-700">{activeDept.location}</div>
+                <div className="text-xs text-slate-400 font-bold mb-1">
+                  配置場所
+                </div>
+                <div className="font-bold text-slate-700">
+                  {activeDept.location}
+                </div>
               </div>
             </div>
 
@@ -1134,7 +1669,9 @@ const OrganizationView = ({ setActiveTab }) => {
                   <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
                     <Bookmark size={16} className="mr-2" /> 主要職責
                   </h3>
-                  <p className="text-slate-700 leading-relaxed font-medium">{activeDept.role}</p>
+                  <p className="text-slate-700 leading-relaxed font-medium">
+                    {activeDept.role}
+                  </p>
                 </div>
                 <div>
                   <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
@@ -1147,19 +1684,21 @@ const OrganizationView = ({ setActiveTab }) => {
               </div>
 
               <div className="space-y-6">
-                <div 
-                  onClick={() => setViewMode('list')}
+                <div
+                  onClick={() => setViewMode("list")}
                   className="flex items-center justify-between bg-blue-50 p-5 rounded-lg border border-blue-200 cursor-pointer hover:bg-blue-100 hover:shadow-md transition-all group"
                 >
                   <span className="font-bold text-[#003366] flex items-center">
                     <Users size={18} className="mr-2" /> 人員配置 (名单查看)
                   </span>
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-black text-[#003366]">{activeDept.staff} 名</span>
+                    <span className="text-2xl font-black text-[#003366]">
+                      {activeDept.staff} 名
+                    </span>
                     <ChevronRight className="text-blue-400 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="flex items-center text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">
                     <Layers size={16} className="mr-2" /> 服装規定 (制服要件)
@@ -1178,10 +1717,12 @@ const OrganizationView = ({ setActiveTab }) => {
                 <h2 className="text-2xl font-black text-[#003366] flex items-center gap-3">
                   <Users size={24} /> {activeDept.name} 直属名簿
                 </h2>
-                <p className="text-sm text-slate-500 mt-1">Personnel Roster & Classified Files</p>
+                <p className="text-sm text-slate-500 mt-1">
+                  Personnel Roster & Classified Files
+                </p>
               </div>
-              <button 
-                onClick={() => setViewMode('dept')}
+              <button
+                onClick={() => setViewMode("dept")}
                 className="text-sm font-bold text-slate-500 hover:text-[#003366] flex items-center gap-1 bg-white px-4 py-2 rounded shadow-sm border"
               >
                 <ChevronLeft size={16} /> 戻る (返回)
@@ -1191,18 +1732,22 @@ const OrganizationView = ({ setActiveTab }) => {
             <div className="grid grid-cols-2 xl:grid-cols-3 gap-6">
               {activeDept.roster && activeDept.roster.length > 0 ? (
                 activeDept.roster.map((officer) => (
-                  <div 
+                  <div
                     key={officer.id}
                     onClick={() => openOfficerDetail(officer)}
                     className="bg-white border-2 border-slate-100 hover:border-[#003366] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex group rounded-r-lg overflow-hidden relative"
                   >
                     <div className="w-24 h-32 bg-slate-200 shrink-0 overflow-hidden relative">
-                      <img src={officer.img} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                      <img
+                        src={officer.img}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        alt=""
+                      />
                       <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                     </div>
                     <div className="p-4 flex flex-col justify-center relative flex-1">
                       <span className="absolute top-1 right-2 text-4xl font-black italic text-slate-50 select-none -z-0">
-                        {officer.id.substring(0,4).toUpperCase()}
+                        {officer.id.substring(0, 4).toUpperCase()}
                       </span>
                       <div className="relative z-10">
                         <span className="text-[10px] font-black tracking-widest text-[#f39800] uppercase block mb-1">
@@ -1220,7 +1765,8 @@ const OrganizationView = ({ setActiveTab }) => {
                 ))
               ) : (
                 <div className="col-span-full py-12 text-center text-slate-400 font-bold border-2 border-dashed border-slate-200 rounded-lg">
-                  この部署には現在登録されている人員データがありません。<br/>
+                  この部署には現在登録されている人員データがありません。
+                  <br />
                   (该部门暂无录入警员数据)
                 </div>
               )}
