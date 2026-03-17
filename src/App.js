@@ -1,55 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
 import {
-  navItems,
-  slides,
-  cast,
-  nfTags,
-  nfHotLives,
-  nfFixedFeeds,
-  departments,
-  dispatchData,
+  navItems,slides,cast,nfTags,nfHotLives,
+  nfFixedFeeds,departments,dispatchData,
 } from "./data";
 import {
-  Shield,
-  Users,
-  Lock,
-  Search,
-  ChevronRight,
-  ChevronLeft,
-  ChevronDown,
-  FileText,
-  Camera,
-  BookOpen,
-  Info,
-  Eye,
-  Radio,
-  Video,
-  Award,
-  Zap,
-  Play,
-  Pause,
-  TrendingUp,
-  Clock,
-  PhoneCall,
-  Heart,
-  Star,
-  List,
-  Flame,
-  Wifi,
-  Layers,
-  User,
-  LogOut,
-  Gift,
-  Bell,
-  Bookmark,
-  Layout,
-  MoreHorizontal,
-  Home,
-  Send,
-  MessageCircle,
-  Monitor,
-  X,
+  Shield,Users,Lock,Search,ChevronRight,ChevronLeft,ChevronDown,FileText,Camera,BookOpen,Info,
+  Eye,Radio,Video,Award,Zap,Play,Pause,TrendingUp,Clock,PhoneCall,Heart,Star,List,Flame,
+  Wifi,Layers,User,LogOut,Gift,Bell,Bookmark,Layout,MoreHorizontal,Home,Send,MessageCircle,Monitor,X,
   Car, // 新增：用于交通课
   Briefcase, // 新增：用于刑事课
   Unlock,
@@ -1161,7 +1119,7 @@ const DispatchView = ({ setSelectedOfficer }) => {
                         }`}
                       >
                         {isSecretMode
-                          ? `年齢: ${off.age}歳`
+                          ? `年齢: ${off.age}歳 · ${off.bodyStatus || '単身'}`
                           : `階級: ${off.rank}`}
                       </p>
                     </div>
@@ -1182,7 +1140,8 @@ const DispatchView = ({ setSelectedOfficer }) => {
                           <span className="text-[8px] font-black text-rose-400 uppercase block mb-0.5">
                             得意な奉仕 (特技)
                           </span>
-                          <p className="text-[11px] font-bold text-rose-900 line-clamp-1">
+                          {/* 改为 text-[10px] 稍微缩小字号，leading-tight 控制紧凑行高，break-words 允许长文本换行 */}
+                          <p className="text-[10px] font-bold text-rose-900 leading-tight break-words">
                             {off.specialty || "本番行為、奉仕全般"}
                           </p>
                         </div>
