@@ -460,6 +460,7 @@ const DispatchView = ({ setSelectedOfficer }) => {
     return selectedService.price + selectedAddons.reduce((sum, a) => sum + a.price, 0);
   };
 
+// 女警们当前红绿灯状态展示
   const getStatusDisplay = (status, shift) => {
     if (shift === "勤務終了") return { color: 'bg-amber-400', text: isSecretMode ? '🟡 ザーメン処理・補給中' : '🟡 返回警局補給中', disable: true };
     if (status === '待機中') return { color: 'bg-emerald-500', text: isSecretMode ? '🟢 待機中 / 奉仕可能' : '🟢 待機中 / 可呼叫', disable: false };
@@ -677,7 +678,7 @@ const DispatchView = ({ setSelectedOfficer }) => {
                 </div>
                 <div>
                   <h2 className={`text-4xl md:text-5xl font-black tracking-widest drop-shadow-sm ${isSecretMode ? 'text-rose-900' : 'text-white'}`}>
-                    {isSecretMode ? '特例奉仕・性欲処理統制局' : '緊急出動管制センター'}
+                    {isSecretMode ? '特例出動・緊急性欲処理管制' : '緊急出動管制センター'}
                   </h2>
                   <p className={`text-sm font-bold uppercase tracking-[0.4em] mt-2 ${isSecretMode ? 'text-rose-500' : 'text-emerald-400 drop-shadow-[0_0_5px_#10b981]'}`}>
                     {isSecretMode ? 'NCPD Delivery Health System' : 'Real-time Dispatch Control'}
