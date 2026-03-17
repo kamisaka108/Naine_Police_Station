@@ -778,27 +778,52 @@ const DispatchView = ({ setSelectedOfficer }) => {
                     )}
                     
                     {/* 状态灯与呼叫按钮 */}
-                    <div className={`flex items-center justify-between pt-3 border-t ${isSecretMode ? 'border-rose-100' : 'border-slate-50'}`}>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${statusDisplay.color} ${!statusDisplay.disable ? 'animate-pulse' : ''}`}></div>
-                        <span className={`text-[10px] font-black ${isSecretMode ? 'text-rose-800' : 'text-slate-600'}`}>
-                          {statusDisplay.text}
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => setCallingOfficer(off)}
-                        disabled={statusDisplay.disable || hasPendingDispatch}
-                        className={`w-10 h-10 flex items-center justify-center shadow-md transition-all 
-                          ${statusDisplay.disable || hasPendingDispatch 
-                            ? (isSecretMode ? 'bg-rose-50 text-rose-200' : 'bg-slate-100 text-slate-300') + ' cursor-not-allowed'
-                            : isSecretMode 
-                              ? 'bg-rose-800 hover:bg-rose-900 text-white active:scale-90' 
-                              : 'bg-[#003366] hover:bg-[#002244] text-white active:scale-90'
-                          }`}
-                      >
-                        {statusDisplay.disable || hasPendingDispatch ? <X size={16} /> : <PhoneCall size={16} fill="currentColor" />}
-                      </button>
-                    </div>
+                    <div 
+                      className={`flex items-center justify-between pt-3 border-t ${
+                        isSecretMode ? 'border-rose-100' : 'border-slate-50'
+                      }`}
+                    >
+                      <div className="flex flex-col justify-center gap-1">
+                        {/* 上半部分：红绿灯状态 */}
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className={`w-2 h-2 rounded-full ${
+                              statusDisplay.color
+                              } ${!statusDisplay.disable ? 'animate-pulse' : ''}`}
+                            ></div>
+                            <span 
+                              className={`text-[10px] font-black ${
+                                isSecretMode ? 'text-rose-800' : 'text-slate-600'
+                              }`}
+                            >
+                              {statusDisplay.text}
+                            </span>
+                          </div>
+                          {/* 下半部分：新增的排班时间显示 */}
+                          <span 
+                            className={`text-[10px] font-mono font-bold pl-0 ${
+                              isSecretMode ? 'text-rose-400' : 'text-slate-400'
+                            }`}
+                          >
+                            {isSecretMode ? '奉仕シフト: ' : '勤務時間: '}{off.shift}
+                          </span>
+                        </div>
+  
+                            {/* 右侧的呼叫按钮保持完全不变 */}
+                            <button 
+                              onClick={() => openForm(off)}
+                              disabled={statusDisplay.disable || hasPendingDispatch}
+                              className={`w-10 h-10 flex items-center justify-center shadow-md transition-all 
+                              ${statusDisplay.disable || hasPendingDispatch 
+                                    ? (isSecretMode ? 'bg-rose-50 text-rose-200' : 'bg-slate-100 text-slate-300') + ' cursor-not-allowed'
+                                      : isSecretMode 
+                                      ? 'bg-rose-800 hover:bg-rose-900 text-white active:scale-90' 
+                                      : 'bg-[#003366] hover:bg-[#002244] text-white active:scale-90'
+                              }`}
+                            >
+                              {statusDisplay.disable || hasPendingDispatch ? <X size={16} /> : <PhoneCall size={16} fill="currentColor" />}
+                              </button>
+                        </div>
                   </div>
                 </div>
               );
