@@ -1,4 +1,26 @@
+import React, { useState, useEffect } from "react";
+import "./styles.css";
+import {
+  navItems,slides,cast,nfTags,nfHotLives,
+  nfFixedFeeds,departments,dispatchData,
+} from "./data";
+import {
+  Shield,Users,Lock,Search,ChevronRight,ChevronLeft,ChevronDown,FileText,Camera,BookOpen,Info,
+  Eye,Radio,Video,Award,Zap,Play,Pause,TrendingUp,Clock,PhoneCall,Heart,Star,List,Flame,
+  Wifi,Layers,User,LogOut,Gift,Bell,Bookmark,Layout,MoreHorizontal,Home,Send,MessageCircle,Monitor,X,
+  Car, // 新增：用于交通课
+  Briefcase, // 新增：用于刑事课
+  Unlock,
+  CheckCircle,
+} from "lucide-react";
 
+import HomeView from './Homeview';
+import DetentionView from './DetentionView';
+import KyoinGenerator from './KyoinGenerator';
+import { AppProvider, useAppContext } from './AppContext';
+import OrganizationView from './OrganizationView';
+import PublicationsView from './PublicationsView';
+import NFPlatformView from './NFPlatformView';
 
 // ==========================================
 // 2. 根组件与路由调度 (Root & Router)
